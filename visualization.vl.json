@@ -1,0 +1,35 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "GDP",
+    "anchor": "start",
+    "subtitle": "Quarterly, price and season adjusted, EUR (millions) | Source: Destatis through ECO API",
+    "fontSize": "14",
+    "subtitleFontSize": "12",
+    "color": "#000000",
+    "subtitleColor": "#000000"
+  },
+  "height": "300",
+  "width": "container",
+  "autosize": {"type": "fit", "contains": "padding"},
+  "background": "#ffffff",
+  "view": {"fill": "#ffffff", "strokeOpacity": 0},
+  "data": {
+    "url": "https://api.economicsobservatory.com/deu/gdp?vega",
+    "format": {"type": "json"}
+  },
+  "mark": {"type": "line", "color": "#f5554d", "strokeWidth": "2"},
+  "encoding": {
+    "x": {
+      "field": "date",
+      "type": "temporal",
+      "axis": {"title": "", "titleColor": "#122B39", "grid": false}
+    },
+    "y": {
+      "field": "value",
+      "type": "quantitative",
+      "axis": {"title": "", "titleColor": "#122B39", "grid": false}
+    }
+  },
+  "config": {}
+}
