@@ -1,0 +1,1140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Veto players and the unanimity core</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E8ECF1; --panel:#F8F9FB; --ink:#1B2232; --ink-soft:#566175; --rule:#C7CFDA; --grid:#E3E8EE;
+  --a:#2B68AD; --b:#A4651A; --c:#8A3A7D; --d:#1C7F70; --veto:#C4352B;
+  --core:#CFE2D0; --core-ink:#386543; --core-book:#D4D6DA;
+  --serif:"STIX Two Text","Cambria Math",Cambria,Georgia,serif;
+  --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#11161E; --panel:#1A202A; --ink:#E5E9EF; --ink-soft:#9BA5B6; --rule:#2F3746; --grid:#222936;
+    --a:#72A9E8; --b:#E1A456; --c:#D088C1; --d:#4DC3AE; --veto:#F2695D;
+    --core:#263B2C; --core-ink:#93C9A0; --core-book:#3A404A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#11161E; --panel:#1A202A; --ink:#E5E9EF; --ink-soft:#9BA5B6; --rule:#2F3746; --grid:#222936;
+  --a:#72A9E8; --b:#E1A456; --c:#D088C1; --d:#4DC3AE; --veto:#F2695D;
+  --core:#263B2C; --core-ink:#93C9A0; --core-book:#3A404A;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+main{max-width:1180px;margin:0 auto;padding:clamp(18px,3.2vw,44px) clamp(14px,3vw,40px) 44px}
+header{max-width:68ch;margin-bottom:clamp(14px,2.2vw,24px)}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(1.65rem,1.1rem + 2.1vw,2.6rem);line-height:1.08;margin:0 0 .45em}
+header p{font-family:var(--serif);font-size:clamp(1.02rem,.96rem + .3vw,1.18rem);line-height:1.55;color:var(--ink-soft);margin:0}
+
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 clamp(12px,1.6vw,18px)}
+.tab{font:500 .95rem var(--sans);padding:.58em 1.1em;border-radius:999px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer}
+.tab:hover{border-color:var(--ink-soft)}
+.tab[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--panel)}
+
+.stage{display:grid;gap:clamp(12px,1.8vw,22px);grid-template-columns:minmax(0,1fr);grid-template-areas:"fig" "ctl" "cap"}
+@media (min-width:880px){
+  .stage{grid-template-columns:minmax(0,1.75fr) minmax(290px,1fr);grid-template-areas:"fig cap" "ctl cap";grid-template-rows:auto 1fr;align-items:start}
+}
+.figure{grid-area:fig;position:relative;background:var(--panel);border:1px solid var(--rule);border-radius:4px;overflow:hidden}
+.figure svg{display:block;width:100%;height:auto;max-width:100%}
+.figure.explore svg{touch-action:none}
+.readout{position:absolute;left:12px;bottom:10px;font-family:var(--serif);font-size:clamp(.95rem,.8rem + .55vw,1.22rem);padding:.18em .62em .22em;background:var(--panel);border:1px solid var(--rule);border-radius:3px;opacity:0;pointer-events:none;white-space:nowrap;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis}
+
+.caption{grid-area:cap;background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:clamp(18px,2.2vw,28px)}
+.step{font-size:.86rem;color:var(--ink-soft);margin:0 0 .6rem;font-variant-numeric:tabular-nums}
+.caption h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.35rem,1.12rem + .8vw,1.75rem);line-height:1.18;margin:0 0 .6rem}
+.caption .body{font-family:var(--serif);font-size:1.12rem;line-height:1.62;margin:0;max-width:60ch}
+.cap-text{transition:opacity .18s ease}
+.explore-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:1rem}
+.explore-tools[hidden]{display:none}
+.tool-btn{font:500 .9rem var(--sans);padding:.5em 1em;border-radius:999px;border:1px solid var(--rule);background:transparent;color:var(--ink);cursor:pointer}
+.tool-btn:hover{border-color:var(--ink-soft)}
+.legend{margin-top:1.5rem;padding-top:1.1rem;border-top:1px solid var(--rule);display:grid;gap:.6rem;font-size:.86rem;line-height:1.35;color:var(--ink-soft)}
+.legend div{display:flex;align-items:center;gap:.65rem}
+.legend div[hidden]{display:none}
+.legend svg{flex:none}
+.note{font-size:.82rem;line-height:1.5;color:var(--ink-soft);margin:1rem 0 0}
+
+.controls{grid-area:ctl;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.btns{display:flex;align-items:center;gap:6px}
+.icon-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--rule);background:var(--panel);color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.icon-btn.primary{width:48px;height:48px;background:var(--ink);border-color:var(--ink);color:var(--panel)}
+.icon-btn:hover{border-color:var(--ink-soft)}
+.track{flex:1 1 240px;display:flex;align-items:center;gap:3px;height:30px;cursor:pointer;touch-action:none;min-width:180px}
+.seg{flex:var(--d) 1 0;min-width:5px;height:6px;border:0;padding:0;border-radius:3px;background:var(--rule);position:relative;overflow:hidden;cursor:pointer;transition:height .15s}
+.seg span{position:absolute;inset:0 auto 0 0;width:0;background:var(--ink)}
+.seg.cur{height:9px}
+.track.dim .seg span{background:var(--ink-soft)}
+.time{font-size:.86rem;color:var(--ink-soft);font-variant-numeric:tabular-nums;min-width:8ch}
+.explore-btn{font:500 .95rem var(--sans);padding:.62em 1.15em;border-radius:999px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.explore-btn.ready,.explore-btn[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:3px}
+
+/* figure */
+.gridline{stroke:var(--grid);stroke-width:1}
+.tri{fill:var(--core);stroke:var(--core-ink);stroke-width:1.6;stroke-linejoin:round;stroke-dasharray:6 6}
+.tri.solid{stroke-dasharray:none}
+.hullg{fill:none;stroke:var(--ink);stroke-width:1.7;stroke-dasharray:8 6;stroke-linejoin:round}
+.disc{stroke:none}
+.disc.A,.dot.A{fill:var(--a)} .disc.B,.dot.B{fill:var(--b)} .disc.C,.dot.C{fill:var(--c)} .disc.D,.dot.D{fill:var(--d)}
+.ring{fill:none;stroke-width:2.3;stroke-linecap:round}
+.ring.A{stroke:var(--a)} .ring.B{stroke:var(--b)} .ring.C{stroke:var(--c)} .ring.D{stroke:var(--d)}
+.radius{stroke:var(--ink-soft);stroke-width:1.6;stroke-dasharray:4 5;fill:none}
+.guide{stroke:var(--ink-soft);stroke-width:1.5;stroke-dasharray:2 6;stroke-linecap:round;fill:none}
+.edge{stroke:var(--core-ink);stroke-width:1.3}
+.axis{stroke:var(--ink-soft);stroke-width:1.6}
+.coreseg{stroke:var(--core-ink);stroke-width:8;stroke-linecap:round}
+.pointer{stroke:var(--ink);stroke-width:1.6}
+.w-cross{fill:url(#hatchX)}
+.ptdot{fill:var(--ink)}
+.ptl{font-family:var(--serif);font-style:italic;font-size:22px;fill:var(--ink);paint-order:stroke;stroke:var(--panel);stroke-width:6px;stroke-linejoin:round}
+.w-under{fill:var(--panel)}
+.w-hatch{fill:url(#hatch)}
+.w-out{fill:none;stroke:var(--ink);stroke-width:3;stroke-linejoin:round}
+.g-hatch{fill:url(#hatchV)}
+.g-out{fill:none;stroke:var(--veto);stroke-width:1.6;stroke-dasharray:5 4;stroke-linejoin:round}
+.dot{stroke:var(--panel);stroke-width:2.5}
+.lbl,.wl,.vt,.sql,.vlabel{paint-order:stroke;stroke:var(--panel);stroke-linejoin:round}
+.lbl{font-family:var(--serif);font-style:italic;font-size:27px;stroke-width:6px}
+.lbl.A{fill:var(--a)} .lbl.B{fill:var(--b)} .lbl.C{fill:var(--c)} .lbl.D{fill:var(--d)}
+.sql{font-family:var(--serif);font-style:italic;font-size:23px;fill:var(--ink);stroke-width:6px}
+.wl{font-family:var(--serif);font-style:italic;font-weight:600;font-size:24px;fill:var(--ink);stroke-width:7px}
+.vlabel{font-family:var(--sans);font-weight:600;font-size:16px;fill:var(--veto);stroke-width:5px}
+.vt{font-family:var(--sans);font-weight:600;font-size:15px;fill:var(--veto);stroke-width:5px}
+.sqring{fill:var(--panel);stroke:var(--ink);stroke-width:2.3}
+.sqdot{fill:var(--ink)}
+.arrow-line{stroke:var(--ink);stroke-width:2.6;stroke-linecap:round}
+.vring{fill:none;stroke:var(--veto);stroke-width:2.6}
+.hit{fill:transparent;stroke:none;cursor:grab}
+.hit:active{cursor:grabbing}
+.figure:not(.explore) .hit{pointer-events:none}
+.hit:focus{outline:none}
+.hit:focus-visible{stroke:var(--a);stroke-width:2;stroke-dasharray:3 3}
+.figlegend text{font-family:var(--sans);font-size:17px;fill:var(--ink)}
+.lg-core{fill:var(--core-book);stroke:var(--ink);stroke-width:1.2}
+.lg-win{stroke:var(--ink);stroke-width:1.2}
+
+.figure .ring,.figure .tri,.figure .dot,.figure .lbl,.figure .edge,.figure .axis{transition:stroke .9s ease,fill .9s ease}
+.figure.book .ring{stroke:var(--ink);stroke-width:1.7}
+.figure.book .tri{fill:var(--core-book);stroke:var(--ink)}
+.figure.book .edge,.figure.book .axis{stroke:var(--ink)}
+.figure.book .dot{fill:var(--ink)}
+.figure.book .lbl{fill:var(--ink)}
+
+@media (max-width:600px){
+  .lbl{font-size:36px;stroke-width:7px} .sql{font-size:31px;stroke-width:7px} .wl{font-size:31px;stroke-width:8px}
+  .vt{font-size:20px} .vlabel{font-size:21px} .figlegend text{font-size:25px} .ptl{font-size:29px;stroke-width:7px}
+  .readout{font-size:.86rem;left:8px;bottom:7px}
+}
+@media (prefers-reduced-motion: reduce){
+  .cap-text,.seg,.figure .ring,.figure .tri,.figure .dot,.figure .lbl,.figure .edge,.figure .axis{transition:none}
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Veto players and the unanimity core</h1>
+    <p>Walkthroughs of Figures 1.2 to 1.5: how the winset of a status quo is found, why it vanishes inside the core, and when an extra veto player matters.</p>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Figure" id="tabs"></div>
+
+  <div class="stage">
+    <div class="figure" id="figure">
+      <svg id="fig" viewBox="0 0 800 600" role="img" aria-label="Diagram of veto players with indifference circles drawn through the status quo">
+        <defs id="defs">
+          <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="8" stroke="var(--ink)" stroke-width="1.7"/>
+          </pattern>
+          <pattern id="hatchV" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+            <line x1="0" y1="0" x2="0" y2="7" stroke="var(--veto)" stroke-width="1.5"/>
+          </pattern>
+          <pattern id="hatchX" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="9" stroke="var(--ink)" stroke-width="1.5"/>
+            <line x1="0" y1="0" x2="9" y2="0" stroke="var(--ink)" stroke-width="1.5"/>
+          </pattern>
+          <marker id="headP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0L10 5L0 10z" fill="var(--ink)"/>
+          </marker>
+          <marker id="head" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path d="M0 0L10 5L0 10z" fill="var(--ink)"/>
+          </marker>
+        </defs>
+        <rect width="800" height="600" fill="var(--panel)"/>
+        <g id="grid"></g>
+        <g id="sceneG">
+        <polygon id="core" class="tri"/>
+        <g id="discLayer"></g>
+        <g id="winLayer"></g>
+        <g id="ringLayer"></g>
+        <polygon id="hullGuide" class="hullg"/>
+        <g id="lineLayer"></g>
+        <g id="ptLayer"></g>
+        <g id="labelLayer"></g>
+        <g id="arrow"><line id="arrowLine" class="arrow-line" marker-end="url(#head)"/></g>
+        <g id="playerLayer"></g>
+        <g id="markerLayer"></g>
+        <circle id="hitSQ" class="hit" r="24" tabindex="-1" aria-label="Status quo. Use the arrow keys to move it."/>
+        </g>
+        <g id="figLegend" class="figlegend"></g>
+      </svg>
+      <div class="readout" id="readout" aria-hidden="true"></div>
+    </div>
+
+    <div class="controls">
+      <div class="btns">
+        <button class="icon-btn" id="restartBtn" aria-label="Restart walkthrough" title="Restart">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 4.2v5h5"/></svg>
+        </button>
+        <button class="icon-btn" id="prevBtn" aria-label="Previous step" title="Previous step">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6l-8 6 8 6z" fill="currentColor"/><path d="M6.5 6v12"/></svg>
+        </button>
+        <button class="icon-btn primary" id="playBtn" aria-label="Play" title="Play (space)">
+          <svg id="playIcon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M8 5l11 7-11 7z" fill="currentColor"/></svg>
+        </button>
+        <button class="icon-btn" id="nextBtn" aria-label="Next step" title="Next step">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l8 6-8 6z" fill="currentColor"/><path d="M17.5 6v12"/></svg>
+        </button>
+      </div>
+      <div class="track" id="track" aria-label="Steps"></div>
+      <span class="time" id="time" aria-hidden="true"></span>
+      <button class="explore-btn" id="exploreBtn" aria-pressed="false">Try it yourself</button>
+    </div>
+
+    <section class="caption" aria-live="polite">
+      <div class="cap-text" id="capText">
+        <p class="step" id="stepLabel"></p>
+        <h2 id="capTitle"></h2>
+        <p class="body" id="capBody"></p>
+      </div>
+      <div class="explore-tools" id="exploreTools" hidden>
+        <button class="tool-btn" id="toggleDBtn">Add D</button>
+        <button class="tool-btn" id="resetBtn">Reset points</button>
+      </div>
+      <div class="legend">
+        <div>
+          <svg width="30" height="20" viewBox="0 0 30 20" aria-hidden="true"><circle cx="15" cy="10" r="7.5" fill="none" stroke="var(--a)" stroke-width="2"/></svg>
+          <span>Indifference circle through the status quo; its owner prefers everything inside</span>
+        </div>
+        <div>
+          <svg width="30" height="20" viewBox="0 0 30 20" aria-hidden="true"><defs><pattern id="hatchL" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--ink)" stroke-width="1.4"/></pattern></defs><rect x="2" y="3" width="26" height="14" rx="2" fill="url(#hatchL)" stroke="var(--ink)" stroke-width="1.4"/></svg>
+          <span>Winset: policies that beat the status quo for every veto player</span>
+        </div>
+        <div id="legendCross" hidden>
+          <svg width="30" height="20" viewBox="0 0 30 20" aria-hidden="true"><defs><pattern id="hatchXL" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--ink)" stroke-width="1.2"/><line x1="0" y1="0" x2="6" y2="0" stroke="var(--ink)" stroke-width="1.2"/></pattern></defs><rect x="2" y="3" width="26" height="14" rx="2" fill="url(#hatchXL)" stroke="var(--ink)" stroke-width="1.4"/></svg>
+          <span>Cross-hatched: W(ABC), the winset when A, B and C are all veto players</span>
+        </div>
+        <div id="legendVeto" hidden>
+          <svg width="30" height="20" viewBox="0 0 30 20" aria-hidden="true"><defs><pattern id="hatchVL" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="5" stroke="var(--veto)" stroke-width="1.3"/></pattern></defs><rect x="2" y="3" width="26" height="14" rx="2" fill="url(#hatchVL)" stroke="var(--veto)" stroke-width="1.3" stroke-dasharray="4 3"/></svg>
+          <span>Vetoed by the newly added veto player: in the old winset, but not the new one</span>
+        </div>
+        <div>
+          <svg width="30" height="20" viewBox="0 0 30 20" aria-hidden="true"><path d="M3 17L15 3L27 17z" fill="var(--core)" stroke="var(--core-ink)" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          <span>Unanimity core: status quo positions nothing can beat</span>
+        </div>
+      </div>
+      <p class="note">Assumes circular preferences: each player prefers policies closer to their ideal point, equally in every direction.</p>
+    </section>
+  </div>
+</main>
+
+<script>
+(() => {
+  const NS = 'http://www.w3.org/2000/svg';
+  const $ = id => document.getElementById(id);
+  const W = 800, H = 600;
+
+  // ---------- helpers ----------
+  const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+  const prog = (t, a, b) => clamp((t - a) / (b - a));
+  const ease = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+  const easeOutBack = p => { if (p <= 0) return 0; const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); };
+  const dist = (p, q) => Math.hypot(p.x - q.x, p.y - q.y);
+  const lerpPt = (p, q, m) => ({ x: p.x + (q.x - p.x) * m, y: p.y + (q.y - p.y) * m });
+  const unit = v => { const n = Math.hypot(v.x, v.y) || 1; return { x: v.x / n, y: v.y / n }; };
+  const set = (el, a) => { for (const k in a) el.setAttribute(k, a[k]); };
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); if (attrs) set(e, attrs); if (parent) parent.appendChild(e); return e; };
+  const fmt = s => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  const meanPt = pts => ({ x: pts.reduce((s, p) => s + p.x, 0) / pts.length, y: pts.reduce((s, p) => s + p.y, 0) / pts.length });
+  const foot = (p, a, c) => { const dx = c.x - a.x, dy = c.y - a.y, k = ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy); return { x: a.x + k * dx, y: a.y + k * dy }; };
+  const reflect = (p, a, c) => { const f = foot(p, a, c); return { x: 2 * f.x - p.x, y: 2 * f.y - p.y }; };
+
+  function hull(pts) {
+    const P = pts.map(p => ({ x: p.x, y: p.y })).sort((a, b) => a.x - b.x || a.y - b.y);
+    if (P.length < 3) return P;
+    const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+    const lo = []; for (const p of P) { while (lo.length >= 2 && cross(lo[lo.length - 2], lo[lo.length - 1], p) <= 0.5) lo.pop(); lo.push(p); }
+    const up = []; for (let i = P.length - 1; i >= 0; i--) { const p = P[i]; while (up.length >= 2 && cross(up[up.length - 2], up[up.length - 1], p) <= 0.5) up.pop(); up.push(p); }
+    up.pop(); lo.pop(); return lo.concat(up);
+  }
+  function inHull(p, pts) {
+    const h = hull(pts); if (h.length < 3) return false;
+    let pos = false, neg = false;
+    for (let i = 0; i < h.length; i++) {
+      const a = h[i], b = h[(i + 1) % h.length];
+      const c = (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x), tol = Math.hypot(b.x - a.x, b.y - a.y) * 0.3;
+      if (c > tol) pos = true; if (c < -tol) neg = true;
+    }
+    return !(pos && neg);
+  }
+  // Every indifference circle passes through S, so in polar form around S each disc is
+  // { S + s·u : 0 < s < 2·u·(centre − S) }. The winset is the pointwise minimum over the discs.
+  function winsetGeom(centers, S) {
+    const N = 540, pts = []; let any = false, minx = Infinity, maxx = -Infinity;
+    for (let i = 0; i < N; i++) {
+      const th = 2 * Math.PI * i / N, dx = Math.cos(th), dy = Math.sin(th);
+      let r = Infinity;
+      for (const c of centers) { const v = 2 * (dx * (c.x - S.x) + dy * (c.y - S.y)); if (v < r) r = v; }
+      if (!(r > 0.3)) r = 0; else any = true;
+      const x = S.x + r * dx, y = S.y + r * dy;
+      pts.push([x, y]); if (x < minx) minx = x; if (x > maxx) maxx = x;
+    }
+    if (!any) return { empty: true };
+    let A2 = 0, cx = 0, cy = 0;
+    for (let i = 0; i < N; i++) { const [x1, y1] = pts[i], [x2, y2] = pts[(i + 1) % N], c = x1 * y2 - x2 * y1; A2 += c; cx += (x1 + x2) * c; cy += (y1 + y2) * c; }
+    const area = Math.abs(A2) / 2;
+    if (area < 0.5) return { empty: true };
+    return { empty: false, area, cx: cx / (3 * A2), cy: cy / (3 * A2), minx, maxx,
+      d: 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L') + 'Z' };
+  }
+
+  // ---------- geometry (laid out after the book's Figures 1.2 and 1.3) ----------
+  const G = { A: { x: 417.3, y: 149.5 }, B: { x: 332.9, y: 325.1 }, C: { x: 579.5, y: 325.1 } };
+  const SQ1 = { x: 549.5, y: 179.5 };
+  const SQ2 = reflect(SQ1, G.A, G.C);            // the second crossing of A's and C's circles
+  const D0 = { x: 500.6, y: 141.8 };              // D as placed in Figure 1.3
+  const Dline = lerpPt(G.B, SQ1, 0.2);            // on the line from B to SQ1; its circle still encloses the whole lens
+  const Dsur = { x: 640, y: 120 };                // beyond SQ1, so the four players surround it
+  const Din = { x: 520, y: 300 };                 // inside the triangle ABC
+  const Fd = foot(D0, G.A, G.C);
+  const T = lerpPt(lerpPt(G.A, G.C, 0.5), D0, 0.65); // a status quo in the new strip ACD
+  const K3 = ['A', 'B', 'C'];
+
+  // ---------- static SVG ----------
+  const svg = $('fig'), figure = $('figure'), defs = $('defs');
+  const gridG = $('grid');
+  for (let x = 40; x < W; x += 40) mk('line', { x1: x, y1: 0, x2: x, y2: H, class: 'gridline' }, gridG);
+  for (let y = 40; y < H; y += 40) mk('line', { x1: 0, y1: y, x2: W, y2: y, class: 'gridline' }, gridG);
+
+  function Pool(parent, make) { this.parent = parent; this.make = make; this.items = []; }
+  Pool.prototype.get = function (i) {
+    while (this.items.length <= i) { const it = this.make(this.items.length); this.parent.appendChild(it.root); this.items.push(it); }
+    const it = this.items[i]; it.root.style.display = ''; return it;
+  };
+  Pool.prototype.hideFrom = function (n) { for (let i = n; i < this.items.length; i++) this.items[i].root.style.display = 'none'; };
+
+  const discPool = new Pool($('discLayer'), () => ({ root: mk('circle', { class: 'disc' }) }));
+  const ringPool = new Pool($('ringLayer'), () => ({ root: mk('circle', { class: 'ring' }) }));
+  const linePool = new Pool($('lineLayer'), () => ({ root: mk('line') }));
+  const labelPool = new Pool($('labelLayer'), () => ({ root: mk('text', { 'text-anchor': 'middle', dy: '0.35em' }) }));
+  const winPool = new Pool($('winLayer'), i => {
+    const cp = mk('clipPath', { id: 'wc' + i }, defs);
+    const clipRect = mk('rect', { x: 0, y: 0, width: W, height: H }, cp);
+    const root = mk('g', { 'clip-path': `url(#wc${i})` });
+    return { root, clipRect, under: mk('path', {}, root), hatch: mk('path', {}, root), out: mk('path', {}, root) };
+  });
+  const ptPool = new Pool($('ptLayer'), () => {
+    const root = mk('g');
+    return { root, dot: mk('circle', { class: 'ptdot', r: 4.6 }, root), label: mk('text', { class: 'ptl', dy: '0.35em' }, root) };
+  });
+  const legendG = $('figLegend'); let legendKey = '';
+  function renderLegend(items) {
+    const key = items.map(i => i.join(':')).join('|');
+    if (key === legendKey) return;
+    legendKey = key; legendG.innerHTML = '';
+    items.forEach(([sw, text], i) => {
+      const y = 530 + i * 30;
+      const r = mk('rect', { x: 24, y, width: 44, height: 17 }, legendG);
+      if (sw === 'core') r.setAttribute('class', 'lg-core');
+      else { r.setAttribute('class', 'lg-win'); r.setAttribute('fill', sw === 'cross' ? 'url(#hatchX)' : 'url(#hatch)'); }
+      mk('text', { x: 80, y: y + 8.5, dy: '0.35em' }, legendG).textContent = text;
+    });
+  }
+  const markerPool = new Pool($('markerLayer'), () => {
+    const root = mk('g');
+    return { root, ring: mk('circle', { class: 'sqring' }, root), dot: mk('circle', { class: 'sqdot' }, root), label: mk('text', { class: 'sql', dy: '0.35em' }, root) };
+  });
+
+  const pl = {};
+  ['A', 'B', 'C', 'D'].forEach(k => {
+    const root = mk('g', {}, $('playerLayer'));
+    pl[k] = {
+      root,
+      vring: mk('circle', { class: 'vring', r: 17 }, root),
+      vtag: mk('text', { class: 'vt', 'text-anchor': 'middle', dy: '0.35em' }, root),
+      dot: mk('circle', { class: 'dot ' + k }, root),
+      lbl: mk('text', { class: 'lbl ' + k, 'text-anchor': 'middle', dy: '0.35em' }, root),
+      hit: mk('circle', { class: 'hit', r: 24, tabindex: -1, 'aria-label': `Player ${k}. Use the arrow keys to move.` }, root),
+    };
+    pl[k].vtag.textContent = 'veto'; pl[k].lbl.textContent = k; pl[k].hit.dataset.key = k;
+  });
+  const hitSQ = $('hitSQ'); hitSQ.dataset.key = 'SQ';
+  const coreEl = $('core'), hullEl = $('hullGuide'), readout = $('readout');
+
+  // ---------- generic renderer ----------
+  const blank = () => ({ sceneOp: 1, pts: [], legendItems: [['core', 'Core'], ['hatch', 'Winset']], grid: 1, players: [], markers: [], rings: [], lines: [], winsets: [], labels: [], core: null, hull: null, arrow: null, readout: { text: '', op: 0 }, legend: 0, book: false, hitSQ: null });
+
+  function render(st) {
+    figure.classList.toggle('book', !!st.book);
+    gridG.style.opacity = st.grid;
+    $('sceneG').style.opacity = st.sceneOp;
+
+    if (st.core && st.core.pts.length >= 3) {
+      coreEl.style.display = '';
+      coreEl.setAttribute('points', st.core.pts.map(p => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' '));
+      coreEl.style.fillOpacity = st.core.fill; coreEl.style.strokeOpacity = st.core.stroke;
+      coreEl.classList.toggle('solid', !!st.core.solid);
+    } else coreEl.style.display = 'none';
+
+    if (st.hull && st.hull.op > 0) {
+      hullEl.style.display = '';
+      hullEl.setAttribute('points', st.hull.pts.map(p => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' '));
+      hullEl.style.opacity = st.hull.op;
+    } else hullEl.style.display = 'none';
+
+    st.rings.forEach((r, i) => {
+      const disc = discPool.get(i).root, ring = ringPool.get(i).root;
+      const rad = Math.max(0.01, dist(r.c, r.S));
+      if (disc.getAttribute('class') !== 'disc ' + r.k) disc.setAttribute('class', 'disc ' + r.k);
+      if (ring.getAttribute('class') !== 'ring ' + r.k) ring.setAttribute('class', 'ring ' + r.k);
+      set(disc, { cx: r.c.x, cy: r.c.y, r: rad }); disc.style.opacity = r.fill || 0;
+      set(ring, { cx: r.c.x, cy: r.c.y, r: rad });
+      const deg = Math.atan2(r.S.y - r.c.y, r.S.x - r.c.x) * 180 / Math.PI;
+      ring.setAttribute('transform', `rotate(${deg.toFixed(2)} ${r.c.x} ${r.c.y})`);
+      const len = 2 * Math.PI * rad + 2;
+      if (r.p >= 1) { ring.style.strokeDasharray = 'none'; ring.style.strokeDashoffset = '0'; }
+      else { ring.style.strokeDasharray = `${len} ${len}`; ring.style.strokeDashoffset = String(len * (1 - r.p)); }
+      ring.style.opacity = r.p > 0 ? r.op : 0;
+      ring.style.strokeWidth = r.w ? r.w + 'px' : '';
+    });
+    discPool.hideFrom(st.rings.length); ringPool.hideFrom(st.rings.length);
+
+    let wi = 0; const labels = [];
+    st.winsets.forEach(w => {
+      if (!(w.op > 0)) return;
+      const g = winsetGeom(w.centers, w.S);
+      if (g.empty) return;
+      const it = winPool.get(wi++);
+      const ghost = w.style === 'ghost';
+      it.under.setAttribute('class', ghost ? '' : 'w-under');
+      it.under.style.display = ghost ? 'none' : '';
+      it.under.style.opacity = 0.85;
+      it.hatch.setAttribute('class', ghost ? 'g-hatch' : (w.style === 'cross' ? 'w-cross' : 'w-hatch'));
+      it.out.setAttribute('class', ghost ? 'g-out' : 'w-out');
+      it.under.setAttribute('d', g.d); it.hatch.setAttribute('d', g.d); it.out.setAttribute('d', g.d);
+      it.out.style.opacity = ghost ? 1 : (w.outline || 0);
+      it.root.style.opacity = w.op;
+      if (w.wipe >= 1) set(it.clipRect, { x: 0, width: W });
+      else set(it.clipRect, { x: g.minx - 8, width: Math.max(0, (g.maxx - g.minx + 16) * w.wipe) });
+      if (w.label && w.label.op > 0 && g.area > (w.label.minArea || 0)) labels.push({ text: w.label.text, x: g.cx, y: g.cy, op: w.label.op, cls: 'wl' });
+    });
+    winPool.hideFrom(wi);
+
+    st.labels.forEach(l => {
+      if (!(l.op > 0)) return;
+      let x = l.x, y = l.y;
+      if (l.at) { const g = winsetGeom(l.at.centers, l.at.S); if (g.empty) return; x = g.cx; y = g.cy; }
+      labels.push({ text: l.text, x, y, op: l.op, cls: l.cls });
+    });
+    labels.forEach((l, i) => {
+      const el = labelPool.get(i).root;
+      if (el.textContent !== l.text) el.textContent = l.text;
+      if (el.getAttribute('class') !== l.cls) el.setAttribute('class', l.cls);
+      set(el, { x: l.x, y: l.y }); el.style.opacity = l.op;
+    });
+    labelPool.hideFrom(labels.length);
+
+    st.lines.forEach((ln, i) => {
+      const el = linePool.get(i).root;
+      if (el.getAttribute('class') !== ln.cls) {
+        el.setAttribute('class', ln.cls);
+        if (ln.cls === 'pointer') el.setAttribute('marker-end', 'url(#headP)'); else el.removeAttribute('marker-end');
+      }
+      set(el, { x1: ln.a.x, y1: ln.a.y, x2: ln.b.x, y2: ln.b.y }); el.style.opacity = ln.op;
+    });
+    linePool.hideFrom(st.lines.length);
+
+    let pi = 0;
+    st.pts.forEach(p => {
+      if (!(p.op > 0)) return;
+      const it = ptPool.get(pi++);
+      set(it.dot, { cx: p.x, cy: p.y });
+      if (it.label.textContent !== p.label) it.label.textContent = p.label;
+      set(it.label, { x: p.x + p.lo[0], y: p.y + p.lo[1], 'text-anchor': p.anchor || 'middle' });
+      it.root.style.opacity = p.op;
+    });
+    ptPool.hideFrom(pi);
+
+    const present = st.players.filter(p => p.s > 0);
+    const cen = present.length ? meanPt(present) : { x: W / 2, y: H / 2 };
+    ['A', 'B', 'C', 'D'].forEach(k => {
+      const p = st.players.find(q => q.k === k), e = pl[k];
+      if (!p || p.s <= 0) { e.root.style.display = 'none'; return; }
+      e.root.style.display = '';
+      const u = unit({ x: p.x - cen.x, y: p.y - cen.y }), td = 44 + 22 * Math.abs(u.x);
+      set(e.dot, { cx: p.x, cy: p.y, r: Math.max(0, 8 * p.s) });
+      if (p.lo) set(e.lbl, { x: p.x + p.lo[0], y: p.y + p.lo[1] });
+      else set(e.lbl, { x: p.x + u.x * 27, y: p.y + u.y * 27 });
+      e.lbl.style.opacity = clamp(p.s);
+      set(e.vring, { cx: p.x, cy: p.y }); e.vring.style.opacity = p.veto || 0;
+      set(e.vtag, { x: p.x + u.x * td, y: p.y + u.y * td }); e.vtag.style.opacity = p.veto || 0;
+      set(e.hit, { cx: p.x, cy: p.y });
+    });
+
+    st.markers.forEach((m, i) => {
+      const it = markerPool.get(i);
+      set(it.ring, { cx: m.x, cy: m.y, r: Math.max(0, 11 * m.s) });
+      set(it.dot, { cx: m.x, cy: m.y, r: Math.max(0, 4.2 * m.s) });
+      if (it.label.textContent !== m.label) it.label.textContent = m.label;
+      if (m.offset) set(it.label, { x: m.x + m.offset[0], y: m.y + m.offset[1], 'text-anchor': m.anchor || 'start' });
+      else if (dist(m, cen) < 50) set(it.label, { x: m.x + 17, y: m.y - 18, 'text-anchor': 'start' });
+      else { const u = unit({ x: m.x - cen.x, y: m.y - cen.y }); set(it.label, { x: m.x + u.x * 30, y: m.y + u.y * 30, 'text-anchor': 'middle' }); }
+      it.label.style.opacity = m.labelOp;
+      it.root.style.opacity = m.op === undefined ? 1 : m.op;
+    });
+    markerPool.hideFrom(st.markers.length);
+    if (st.hitSQ) { hitSQ.style.display = ''; set(hitSQ, { cx: st.hitSQ.x, cy: st.hitSQ.y }); } else hitSQ.style.display = 'none';
+
+    const ar = $('arrow');
+    if (st.arrow && st.arrow.op > 0) {
+      const d = { x: Math.cos(st.arrow.ang), y: Math.sin(st.arrow.ang) }, S = st.arrow.S;
+      set($('arrowLine'), { x1: S.x + d.x * 13, y1: S.y + d.y * 13, x2: S.x + d.x * 72, y2: S.y + d.y * 72 });
+      ar.style.opacity = st.arrow.op;
+    } else ar.style.opacity = 0;
+
+    renderLegend(st.legendItems);
+    legendG.style.opacity = st.legend;
+    if (readout.textContent !== st.readout.text) readout.textContent = st.readout.text;
+    readout.style.opacity = st.readout.text ? st.readout.op : 0;
+  }
+
+  function pickReadout(t, list) {
+    for (const [text, a, b, c, d] of list) if (t >= a && t < d) return { text, op: prog(t, a, b) * (1 - prog(t, c, d)) };
+    return { text: '', op: 0 };
+  }
+
+  // ---------- Figure 1.2 ----------
+  const scenes12 = [
+    { title: 'Three veto players', start: 0, end: 6,
+      body: 'Each dot is the ideal policy of one veto player, in a space with two policy dimensions. A player likes a policy more the closer it is to their dot. Because A, B and C each hold a veto, policy can change only if all three agree.' },
+    { title: 'The status quo, SQ₁', start: 6, end: 11,
+      body: 'SQ₁ is the policy currently in place. It sits outside the triangle whose corners are the three ideal points. Is there an alternative that all three players would prefer?' },
+    { title: 'A’s indifference curve', start: 11, end: 18,
+      body: 'Draw a circle centred on A that passes through SQ₁. A is indifferent between SQ₁ and every point on the circle, and prefers every point inside it.' },
+    { title: 'Adding B and C', start: 18, end: 25,
+      body: 'Do the same for B and C. B is far from SQ₁, so B’s circle is large; C is closer, so C’s is smaller. Each circle encloses the policies that player would rather have than SQ₁.' },
+    { title: 'The winset of SQ₁', start: 25, end: 33,
+      body: 'Only where all three circles overlap is every player better off than at SQ₁. This hatched lens is the winset, W(SQ₁): the policies that could replace SQ₁ by unanimous agreement. B’s large circle contains the whole lens, so A’s and C’s circles set its shape.' },
+    { title: 'A second status quo, SQ₂', start: 33, end: 40,
+      body: 'Now take SQ₂, inside the triangle. It sits at the other tip of the lens, so A’s and C’s circles through SQ₂ are the very same circles already drawn through SQ₁.' },
+    { title: 'B’s circle through SQ₂', start: 40, end: 48,
+      body: 'B is close to SQ₂, so B’s circle through it is small. The policies that A and C both prefer to SQ₂ form the lens, and the lens lies entirely outside B’s new circle. Nothing is inside all three, so W(SQ₂) = ∅.' },
+    { title: 'Why every move is vetoed', start: 48, end: 58,
+      body: 'Pick any alternative to SQ₂. Wherever the arrow points, its tip falls outside at least one of the circles through SQ₂, so at least one player prefers SQ₂ and blocks the change. The ringed player is the one who vetoes it.' },
+    { title: 'The unanimity core', start: 58, end: 65,
+      body: 'The same holds for any status quo inside the triangle or on its edges. So the whole triangle ABC is the unanimity core: once policy lands there, the three veto players can never all agree to move it.' },
+    { title: 'The complete figure', start: 65, end: 72,
+      body: 'Put together, this is Figure 1.2. The shaded triangle is the unanimity core, and the hatched lens is the winset of SQ₁. SQ₂ lies in the core, so no alternative can beat it.' },
+  ];
+
+  function build12(t) {
+    const st = blank(), P = G;
+    const restore = prog(t, 65, 66.5);
+    const coreDim = prog(t, 58, 59.5) * (1 - restore);
+    const bDim = prog(t, 36, 38) * (1 - restore);
+    const hatchDim = prog(t, 38, 39.5) * (1 - restore);
+    const fillsOff = 1 - prog(t, 58, 59.5);
+    const pulse = Math.sin(Math.PI * prog(t, 36, 38.5));
+    st.book = t >= 65;
+    st.grid = ease(prog(t, 0, 1.2)) * (1 - 0.6 * restore);
+
+    const aop = prog(t, 48, 49) * (1 - prog(t, 57, 58));
+    const ang = (-60 + 360 * prog(t, 49, 57)) * Math.PI / 180;
+    const tip = { x: SQ2.x + Math.cos(ang) * 72, y: SQ2.y + Math.sin(ang) * 72 };
+    st.players = K3.map((k, i) => ({ k, x: P[k].x, y: P[k].y, s: easeOutBack(prog(t, 0.6 + i * 0.7, 1.4 + i * 0.7)),
+      veto: aop > 0 ? clamp((dist(tip, P[k]) - dist(P[k], SQ2)) / 5) * aop : 0 }));
+    st.arrow = { S: SQ2, ang, op: aop };
+
+    const s1 = easeOutBack(prog(t, 6.2, 7)), s2 = easeOutBack(prog(t, 34, 35));
+    st.markers = [
+      { x: SQ1.x, y: SQ1.y, s: s1, label: 'SQ₁', labelOp: clamp(s1) },
+      { x: SQ2.x, y: SQ2.y, s: s2, label: 'SQ₂', labelOp: clamp(s2), offset: [15, 19] },
+    ];
+    const coreP = ease(prog(t, 58.5, 60.5));
+    st.core = { pts: [P.A, P.B, P.C], fill: 0.9 * coreP, stroke: coreP > 0 ? 1 : 0.6 * prog(t, 7, 8.5), solid: coreP > 0 };
+
+    const win = { A: [12.5, 15.5], B: [18.8, 21.3], C: [22.1, 24.4] }, radW = { A: [11, 12.5], B: [18, 18.8], C: [21.3, 22.1] };
+    K3.forEach(k => {
+      const w = win[k];
+      let op = 1 - 0.65 * coreDim;
+      let fo = 0.10 * prog(t, w[1], w[1] + 1) * (1 - 0.5 * prog(t, 25, 26.5)) * fillsOff;
+      if (k === 'B') { op *= 1 - 0.78 * bDim; fo *= 1 - bDim; }
+      st.rings.push({ k, c: P[k], S: SQ1, p: ease(prog(t, w[0], w[1])), op, fill: fo, w: (k !== 'B' && pulse > 0.001) ? 2.3 + 2.6 * pulse : 0 });
+      const lp = ease(prog(t, radW[k][0], radW[k][1]));
+      st.lines.push({ a: P[k], b: lerpPt(P[k], SQ1, lp), op: lp > 0 ? 1 - prog(t, 24.4, 25.2) : 0, cls: 'radius' });
+    });
+    st.rings.push({ k: 'B', c: P.B, S: SQ2, p: ease(prog(t, 41, 43.5)), op: 1 - 0.65 * coreDim, fill: 0.10 * prog(t, 43.5, 44.5) * fillsOff });
+    const lp2 = ease(prog(t, 40, 41));
+    st.lines.push({ a: P.B, b: lerpPt(P.B, SQ2, lp2), op: lp2 > 0 ? 1 - prog(t, 44.5, 45.3) : 0, cls: 'radius' });
+
+    const wipe = ease(prog(t, 26, 29));
+    st.winsets.push({ centers: [P.A, P.B, P.C], S: SQ1, style: 'main', op: wipe > 0 ? 1 - 0.7 * hatchDim : 0, wipe,
+      outline: prog(t, 28.5, 30) * (1 - 0.7 * hatchDim) * (1 - restore),
+      label: { text: 'W(SQ₁)', op: prog(t, 29.5, 30.5) * (1 - prog(t, 38, 39)) } });
+
+    st.legend = prog(t, 66, 67);
+    st.readout = pickReadout(t, [
+      ['W(SQ₁) ≠ ∅', 29.5, 30.3, 33.2, 34],
+      ['W(SQ₂) = ∅', 44.8, 45.6, 58, 58.8],
+      ['Unanimity core = triangle ABC', 60, 60.8, 65, 65.8],
+    ]);
+    return st;
+  }
+
+  // ---------- Figure 1.3 ----------
+  const scenes13 = [
+    { title: 'Start from Figure 1.2', start: 0, end: 6,
+      body: 'Here is Figure 1.2 again: veto players A, B and C, the hatched winset of SQ₁, and the triangle ABC as the unanimity core, with SQ₂ inside it.' },
+    { title: 'A fourth veto player, D', start: 6, end: 13,
+      body: 'Now D joins as a veto player, near A. To see which policies D prefers to SQ₁, draw D’s circle through SQ₁, just as before.' },
+    { title: 'The winset of SQ₁ shrinks', start: 13, end: 21,
+      body: 'A policy can now replace SQ₁ only if it lies inside all four circles. Most of the old lens lies outside D’s circle, so D vetoes it (red). What is left is a much smaller winset. This is the usual result: an extra veto player shrinks the winset.' },
+    { title: 'A veto player who changes nothing', start: 21, end: 31,
+      body: 'Now move D onto the line from B to SQ₁, between the two. D’s circle through SQ₁ now sits inside B’s, but it still encloses the whole lens, so D vetoes nothing new and W(SQ₁) keeps its size. Under special conditions like this, an extra veto player leaves the winset as it was.' },
+    { title: 'When SQ₁ is surrounded', start: 31, end: 39,
+      body: 'Place D on the far side of SQ₁ instead, so that the four veto players surround it (dashed outline). Every direction away from SQ₁ moves away from at least one of them, so the winset disappears: W(SQ₁) = ∅.' },
+    { title: 'Winsets never grow', start: 39, end: 45,
+      body: 'Each new veto player adds one more circle that a policy must lie inside, and never removes one. So if the winset of the status quo exists, its size decreases or stays the same as veto players are added.' },
+    { title: 'SQ₂ stays unbeatable', start: 45, end: 52,
+      body: 'SQ₂ already had an empty winset with three veto players: no region lies inside A’s, B’s and C’s circles through it. More veto players only add more vetoes, so W(SQ₂) stays empty however many join.' },
+    { title: 'The core expands', start: 52, end: 60,
+      body: 'D does change something else. The unanimity core grows from the triangle ABC to the whole area ABCD.' },
+    { title: 'Why the new area can’t be beaten', start: 60, end: 70,
+      body: 'Take a status quo SQ′ in the new strip between A, C and D. With only A, B and C as veto players, their circles through SQ′ still overlap (hatched), so SQ′ could be beaten. D’s circle through SQ′ misses that overlap entirely, so with D added, nothing beats SQ′.' },
+    { title: 'A veto player who leaves the core alone', start: 70, end: 79,
+      body: 'If D sat inside the triangle ABC instead, the outer boundary of the veto players would not move, and the core would stay the triangle ABC. An extra veto player need not expand the core.' },
+    { title: 'Cores never shrink', start: 79, end: 84,
+      body: 'Adding a veto player can only add status quo positions that nothing beats; it never removes any. So if there is a unanimity core, its size increases or stays the same as veto players are added.' },
+    { title: 'The complete figure', start: 84, end: 91,
+      body: 'With D back in place, this is Figure 1.3. The four circles through SQ₁ leave only a sliver of winset next to SQ₁, and the unanimity core is the whole area ABCD.' },
+  ];
+
+  const dMoves = [[21.5, 24.5, D0, Dline], [31.5, 34.5, Dline, Dsur], [39.5, 42, Dsur, D0], [71, 74, D0, Din], [79, 81.5, Din, D0]];
+  const dAt = t => { let p = D0; for (const [a, b, f, to] of dMoves) if (t >= a) p = lerpPt(f, to, ease(prog(t, a, b))); return p; };
+
+  function build13(t) {
+    const st = blank(), P = G, D = dAt(t);
+    const intro = ease(prog(t, 0, 1.5));
+    const restore = prog(t, 84, 85.5);
+    const dimSQ1 = prog(t, 45, 46.5) * (1 - restore);
+    const hideT = prog(t, 60, 61) * (1 - restore);
+    const markerDim = prog(t, 60, 61) * (1 - prog(t, 79, 80));
+    const tFade = 1 - prog(t, 70, 71);
+    st.book = t >= 84.5;
+    st.grid = intro * (1 - 0.6 * restore);
+
+    st.players = [...K3.map(k => ({ k, x: P[k].x, y: P[k].y, s: intro })), { k: 'D', x: D.x, y: D.y, s: easeOutBack(prog(t, 6.5, 7.3)) }];
+    const mop = 1 - 0.88 * markerDim;
+    st.markers = [
+      { x: SQ1.x, y: SQ1.y, s: intro, label: 'SQ₁', labelOp: intro, op: mop },
+      { x: SQ2.x, y: SQ2.y, s: intro, label: 'SQ₂', labelOp: intro, op: mop, offset: [15, 19] },
+    ];
+    const tS = easeOutBack(prog(t, 61, 61.7)) * tFade;
+    if (tS > 0) st.markers.push({ x: T.x, y: T.y, s: tS, label: 'SQ′', labelOp: clamp(tS), op: 1, offset: [16, 4] });
+
+    const V = t < 56 ? lerpPt(Fd, D0, ease(prog(t, 53, 56))) : D;
+    st.core = { pts: hull([P.A, P.B, P.C, V]), fill: 0.9 * intro, stroke: intro, solid: true };
+    st.lines.push({ a: P.A, b: P.C, op: prog(t, 56, 57), cls: 'edge' });
+    st.hull = { pts: hull([P.A, P.B, P.C, D]), op: prog(t, 34.5, 35.5) * (1 - prog(t, 39, 40)) };
+
+    // circles through SQ1 (and B's small circle through SQ2)
+    const fills = 0.08 * intro * (1 - dimSQ1) * (1 - hideT) * (1 - restore);
+    st.rings.push({ k: 'A', c: P.A, S: SQ1, p: 1, op: intro * (1 - 0.6 * dimSQ1) * (1 - hideT), fill: fills });
+    st.rings.push({ k: 'B', c: P.B, S: SQ1, p: 1, op: intro * (1 - 0.8 * dimSQ1) * (1 - hideT), fill: fills });
+    st.rings.push({ k: 'C', c: P.C, S: SQ1, p: 1, op: intro * (1 - 0.6 * dimSQ1) * (1 - hideT), fill: fills });
+    st.rings.push({ k: 'D', c: D, S: SQ1, p: ease(prog(t, 8.3, 10.8)), op: (1 - 0.8 * dimSQ1) * (1 - hideT),
+      fill: 0.10 * prog(t, 10.8, 11.8) * (1 - dimSQ1) * (1 - hideT) * (1 - restore) });
+    st.rings.push({ k: 'B', c: P.B, S: SQ2, p: ease(prog(t, 46, 48.5)), op: 1 - hideT, fill: 0.10 * prog(t, 48.5, 49.5) * (1 - hideT) * (1 - restore) });
+
+    const lpD = ease(prog(t, 7.5, 8.3));
+    st.lines.push({ a: D, b: lerpPt(D, SQ1, lpD), op: lpD > 0 ? 1 - prog(t, 11, 11.8) : 0, cls: 'radius' });
+    const lpB = ease(prog(t, 45.5, 46.2));
+    st.lines.push({ a: P.B, b: lerpPt(P.B, SQ2, lpB), op: lpB > 0 ? 1 - prog(t, 49, 49.8) : 0, cls: 'radius' });
+    st.lines.push({ a: P.B, b: SQ1, op: prog(t, 21, 22) * (1 - prog(t, 31, 32)), cls: 'guide' });
+
+    // winsets of SQ1: the three-player lens, the part D vetoes, and what is left
+    const ghostP = prog(t, 13, 14.5);
+    st.winsets.push({ centers: [P.A, P.B, P.C], S: SQ1, style: 'main', op: intro * (1 - ghostP), wipe: 1, outline: intro * (1 - ghostP) });
+    st.winsets.push({ centers: [P.A, P.B, P.C], S: SQ1, style: 'ghost', op: ghostP * (1 - dimSQ1) * (1 - hideT) * (1 - restore), wipe: 1 });
+    st.winsets.push({ centers: [P.A, P.B, P.C, D], S: SQ1, style: 'main', op: t >= 14 ? (1 - 0.7 * dimSQ1) * (1 - hideT) : 0,
+      wipe: ease(prog(t, 14, 16.5)), outline: prog(t, 15.5, 16.5) * (1 - 0.7 * dimSQ1) * (1 - hideT) * (1 - restore) });
+    st.labels.push({ text: 'vetoed by D', cls: 'vlabel', at: { centers: [P.A, P.B, P.C], S: SQ1 }, op: prog(t, 16, 17) * (1 - prog(t, 20.5, 21.3)) });
+
+    // a status quo SQ′ in the strip ACD
+    if (t >= 61 && t < 71) {
+      [['A', 61.7, 63.2], ['B', 62.2, 63.7], ['C', 62.7, 64.2]].forEach(([k, a, b]) =>
+        st.rings.push({ k, c: P[k], S: T, p: ease(prog(t, a, b)), op: tFade, fill: 0.06 * prog(t, b, b + 1) * tFade }));
+      st.rings.push({ k: 'D', c: D0, S: T, p: ease(prog(t, 66, 67.4)), op: tFade, fill: 0.10 * prog(t, 67.4, 68.2) * tFade });
+      st.winsets.push({ centers: [P.A, P.B, P.C], S: T, style: 'main', op: t >= 64.2 ? 1 - prog(t, 67.6, 68.6) : 0,
+        wipe: ease(prog(t, 64.2, 65.4)), outline: prog(t, 64.8, 65.6) * (1 - prog(t, 67.6, 68.6)) });
+      st.winsets.push({ centers: [P.A, P.B, P.C], S: T, style: 'ghost', op: prog(t, 67.6, 68.6) * tFade, wipe: 1 });
+    }
+
+    st.legend = prog(t, 85.5, 86.5);
+    st.readout = pickReadout(t, [
+      ['W(SQ₁) ≠ ∅ and W(SQ₂) = ∅', 1, 2, 5.5, 6.2],
+      ['W(SQ₁) shrinks', 15.5, 16.3, 20.5, 21.3],
+      ['W(SQ₁) unchanged', 25, 25.8, 30.5, 31.3],
+      ['W(SQ₁) = ∅', 35, 35.8, 38.6, 39.3],
+      ['Winsets shrink or stay the same', 40.5, 41.3, 44.4, 45.1],
+      ['W(SQ₂) = ∅, with or without D', 48.5, 49.3, 51.8, 52.4],
+      ['Unanimity core = ABCD', 56.5, 57.3, 59.6, 60.3],
+      ['Without D: W(SQ′) ≠ ∅', 64.8, 65.6, 67.4, 68],
+      ['With D: W(SQ′) = ∅', 68.2, 69, 70.2, 70.9],
+      ['Core unchanged: still ABC', 74.5, 75.3, 78.6, 79.3],
+      ['Cores grow or stay the same', 81.5, 82.3, 83.6, 84.3],
+    ]);
+    return st;
+  }
+
+  // ---------- Figures 1.4 and 1.5 ----------
+  const along = (t, moves, start) => { let p = start; for (const [a, b, f, to] of moves) if (t >= a) p = lerpPt(f, to, ease(prog(t, a, b))); return p; };
+  const pointer = (from, to, gap0 = 0, gap1 = 4) => {
+    const u = unit({ x: to.x - from.x, y: to.y - from.y });
+    return { a: { x: from.x + u.x * gap0, y: from.y + u.y * gap0 }, b: { x: to.x - u.x * gap1, y: to.y - u.y * gap1 } };
+  };
+
+  // Figure 1.4: A, B and C on one line; every circle through SQ also passes through its mirror image SQ′.
+  const LY = 300;
+  const L = { A: { x: 165.7, y: LY }, B: { x: 340.3, y: LY }, C: { x: 507.9, y: LY } };
+  const SQa = { x: 263.6, y: 206.7 };
+  const mirrorL = S => ({ x: S.x, y: 2 * LY - S.y });
+  const Bnear = lerpPt(L.A, L.C, 0.12), Bfar = lerpPt(L.A, L.C, 0.9), Bout = { x: 45, y: LY };
+  const bMoves = [[44, 46.5, L.B, Bnear], [47.5, 51, Bnear, Bfar], [52, 53.5, Bfar, L.B], [54.5, 57.5, L.B, Bout], [62, 63.5, Bout, L.B]];
+  const P1 = { x: 400, y: 170 }, P2 = { x: 330, y: 420 };
+  const sqTour1 = [[72, 74.7, SQa, P1], [74.7, 77.4, P1, P2], [77.4, 80, P2, SQa]];
+
+  // Figure 1.5: a triangle ABC with D inside it.
+  const Q = { A: { x: 198.25, y: 295.05 }, B: { x: 303.65, y: 129.2 }, C: { x: 505.15, y: 295.05 } };
+  const SQb = { x: 297.45, y: 344.65 };
+  const D2in = { x: 274.2, y: 251.65 }, D2out = { x: 420, y: 322 };
+  const W1 = { x: 590, y: 350 }, W2 = { x: 470, y: 70 }, W3 = { x: 150, y: 170 }, W4 = { x: 140, y: 340 };
+  const sqTour2 = [[100.5, 102.2, SQb, W1], [102.2, 103.9, W1, W2], [103.9, 105.6, W2, W3], [105.6, 107.3, W3, W4], [107.3, 109, W4, SQb]];
+  const d2Moves = [[110.5, 113, D2in, D2out], [119.5, 121.5, D2out, D2in]];
+
+  const scenes14 = [
+    { title: 'Three actors on a line', start: 0, end: 6,
+      body: 'A, B and C sit on one straight line. For the moment they are ordinary actors, not veto players. The status quo SQ can be anywhere in the plane, so from here on winsets are named after the veto players involved, like W(AB), rather than after SQ.' },
+    { title: 'Circles through SQ', start: 6, end: 14,
+      body: 'Draw each actor’s indifference circle through SQ. Because the three centres lie on one line, every circle also passes through SQ′, the mirror image of SQ; three circles can share two points only when their centres are collinear. D, E and F mark where A’s, B’s and C’s circles cross the line.' },
+    { title: 'Veto players A and B', start: 14, end: 21,
+      body: 'Suppose only A and B are veto players. Their winset W(AB) is the hatched lens where their two circles overlap, crossing the line between E and D.' },
+    { title: 'Adding C shrinks the winset', start: 21, end: 29,
+      body: 'Now give C a veto as well. Only the cross-hatched part, between F and D, is also inside C’s circle, so the winset shrinks to W(ABC). Adding C makes the status quo harder to change: policy stability goes up.' },
+    { title: 'Starting instead from A and C', start: 29, end: 36,
+      body: 'Take a different path. Start with A and C as the veto players. Their winset W(AC) is the lens between their circles, again running from F to D.' },
+    { title: 'Adding B changes nothing', start: 36, end: 43,
+      body: 'Now add B as a veto player. B’s circle wraps around the whole lens, so B vetoes nothing that A and C would accept together: W(ABC) = W(AC).' },
+    { title: 'Why B is absorbed', start: 43, end: 54,
+      body: 'Slide B anywhere between A and C and its circle still encloses the lens: F always stays between E and D. Measured in squared distance, B’s gain from any policy over SQ is a weighted average of A’s and C’s gains, so whenever A and C both gain, B does too. B is absorbed.' },
+    { title: 'Outside the segment, B matters', start: 54, end: 62,
+      body: 'The reverse also holds. Move B past A, outside the segment, and its circle cuts into the lens: B now vetoes some policies (red) that A and C both wanted. A new veto player leaves the winset untouched for every position of SQ exactly when it sits inside the existing players’ core.' },
+    { title: 'The unanimity core', start: 62, end: 71,
+      body: 'The core follows the same logic; on a line it is a segment. Adding C to A and B stretches the core from AB to AC. Adding B to A and C leaves it at AC.' },
+    { title: 'Any status quo', start: 71, end: 81,
+      body: 'None of this depends on where SQ is. Move it around and B’s circle always contains W(AC), so W(ABC) = W(AC) throughout. When SQ crosses the segment AC itself, both winsets are empty.' },
+    { title: 'The complete Figure 1.4', start: 81, end: 88,
+      body: 'Put together, this is Figure 1.4. The single-hatched lens is the winset of A and B; the cross-hatched lens inside it is the winset of A, B and C, which is the same as the winset of A and C.' },
+    { title: 'In two dimensions', start: 88, end: 96,
+      body: 'Figure 1.5 makes the same argument in two dimensions. A, B and C are veto players, their unanimity core is the triangle ABC, and their winset W(ABC) is the thin lens next to SQ.' },
+    { title: 'D inside the triangle is absorbed', start: 96, end: 110,
+      body: 'Add a fourth veto player D inside the triangle. D’s circle through SQ encloses W(ABC), so the winset doesn’t change, and neither does the core. Move SQ anywhere and the same holds: D never blocks a policy that A, B and C all accept. D is absorbed.' },
+    { title: 'D outside the triangle', start: 110, end: 119,
+      body: 'Move D outside the triangle and both results change. The core expands to take in D, and D’s circle now cuts into W(ABC), shrinking the winset (red), at least for some positions of SQ such as this one.' },
+    { title: 'The complete Figure 1.5', start: 119, end: 126,
+      body: 'With D back inside, this is Figure 1.5: the winset of A, B and C lies within D’s circle, so adding D changes nothing.' },
+  ];
+
+  function build14(t) { return t < 89 ? build14line(t) : build14plane(t); }
+
+  function build14line(t) {
+    const st = blank();
+    st.sceneOp = 1 - prog(t, 88, 89);
+    const restore = prog(t, 81, 82.5);
+    st.book = t >= 81.5;
+    st.grid = ease(prog(t, 0, 1.2)) * (1 - 0.6 * restore);
+    const B = along(t, bMoves, L.B), S = along(t, sqTour1, SQa), S2 = mirrorL(S);
+    const P = { A: L.A, B, C: L.C };
+    st.players = ['A', 'B', 'C'].map((k, i) => ({ k, x: P[k].x, y: P[k].y, s: easeOutBack(prog(t, 0.8 + i * 0.6, 1.6 + i * 0.6)), lo: [0, 28] }));
+    const lp = ease(prog(t, 0.2, 1.6));
+    st.lines.push({ a: { x: 25, y: LY }, b: { x: 25 + (560 - 25) * lp, y: LY }, op: 1, cls: 'axis' });
+
+    const sqs = easeOutBack(prog(t, 3.5, 4.3)), s2s = easeOutBack(prog(t, 11.5, 12.2));
+    st.markers.push({ x: S.x, y: S.y, s: sqs, label: 'SQ', labelOp: clamp(sqs), offset: [0, -27], anchor: 'middle' });
+    st.markers.push({ x: S2.x, y: S2.y, s: s2s, label: 'SQ′', labelOp: clamp(s2s), offset: [0, 28], anchor: 'middle' });
+
+    const cd = prog(t, 62.5, 63.5) * (1 - prog(t, 70, 71));
+    const dimC = prog(t, 14, 15) * (1 - prog(t, 21, 22));
+    const fills = (1 - restore) * (1 - cd);
+    st.rings.push({ k: 'A', c: P.A, S, p: ease(prog(t, 6.5, 8.5)), op: 1 - 0.75 * cd, fill: 0.07 * prog(t, 8.5, 9.5) * fills });
+    const early = t < 36.5;
+    st.rings.push({ k: 'B', c: B, S, p: early ? ease(prog(t, 8, 10)) : ease(prog(t, 36.5, 39)),
+      op: (early ? 1 - prog(t, 29, 30.5) : 1) * (1 - 0.75 * cd),
+      fill: 0.07 * (early ? prog(t, 10, 11) * (1 - prog(t, 29, 30.5)) : prog(t, 39, 40)) * fills });
+    st.rings.push({ k: 'C', c: P.C, S, p: ease(prog(t, 9.5, 11.5)), op: (1 - 0.75 * dimC) * (1 - 0.75 * cd),
+      fill: 0.07 * prog(t, 11.5, 12.5) * (1 - dimC) * fills });
+
+    // D, E and F: where A's, B's and C's circles cross the line
+    const pp = prog(t, 12, 13);
+    const eOp = pp * (early ? 1 - prog(t, 29, 30.5) : prog(t, 38.5, 39.3)) * (1 - prog(t, 54.5, 55.3) * (1 - prog(t, 62.6, 63.5)));
+    st.pts.push({ x: B.x - dist(B, S), y: LY, label: 'E', lo: [-9, -21], anchor: 'end', op: eOp });
+    st.pts.push({ x: P.C.x - dist(P.C, S), y: LY, label: 'F', lo: [7, -21], anchor: 'start', op: pp });
+    st.pts.push({ x: P.A.x + dist(P.A, S), y: LY, label: 'D', lo: [8, -21], anchor: 'start', op: pp });
+
+    // winsets: W(AB) single-hatched, W(AC) minus W(ABC) in red, W(ABC) cross-hatched
+    const opAB = t < 30 ? (t >= 15.5 ? 1 - prog(t, 29, 30) : 0) : prog(t, 81, 82.5);
+    st.winsets.push({ centers: [P.A, B], S, style: 'main', op: opAB * (1 - 0.75 * cd), wipe: t < 30 ? ease(prog(t, 15.5, 18)) : 1,
+      outline: prog(t, 17, 18) * (1 - prog(t, 29, 30)) });
+    st.winsets.push({ centers: [P.A, P.C], S, style: 'ghost', op: prog(t, 56, 57) * (1 - prog(t, 61.5, 62.5)), wipe: 1 });
+    st.winsets.push({ centers: [P.A, B, P.C], S, style: 'cross', op: t >= 22.5 ? 1 - 0.75 * cd : 0, wipe: ease(prog(t, 22.5, 25)),
+      outline: prog(t, 24, 25) * (1 - restore) * (1 - 0.75 * cd) });
+
+    const opLab = prog(t, 17.5, 18.5) * (1 - prog(t, 29, 30));
+    if (opLab > 0) {
+      st.labels.push({ text: 'W(AB)', x: 140, y: 150, op: opLab, cls: 'wl' });
+      st.lines.push({ ...pointer({ x: 146, y: 164 }, { x: 234, y: 292 }), op: opLab, cls: 'pointer' });
+    }
+    const xl = pickReadout(t, [['W(ABC)', 24.5, 25.5, 29.3, 30], ['W(AC)', 30.3, 31, 38.6, 39.2], ['W(ABC) = W(AC)', 39.4, 40.1, 43, 43.6]]);
+    if (xl.op > 0) {
+      st.labels.push({ text: xl.text, x: 450, y: 128, op: xl.op, cls: 'wl' });
+      st.lines.push({ ...pointer({ x: 440, y: 142 }, { x: 284, y: 270 }), op: xl.op, cls: 'pointer' });
+    }
+
+    const segOp = prog(t, 64, 65.2) * (1 - prog(t, 70, 71));
+    if (segOp > 0) st.lines.push({ a: P.A, b: lerpPt(L.B, L.C, ease(prog(t, 66.4, 68.4))), op: segOp, cls: 'coreseg' });
+
+    st.readout = pickReadout(t, [
+      ['W(AB): the lens from E to D', 18.5, 19.3, 20.5, 21],
+      ['W(ABC) is smaller than W(AB)', 25.5, 26.3, 28.5, 29],
+      ['B vetoes nothing new', 39.8, 40.6, 42.6, 43.1],
+      ['F stays between E and D', 45, 45.8, 53.4, 54],
+      ['B outside AC: W(ABC) shrinks', 57.5, 58.3, 61.5, 62],
+      ['Core of A and B: segment AB', 64.4, 65.2, 66, 66.4],
+      ['Adding C: core grows to AC', 66.6, 67.4, 68.6, 69],
+      ['Adding B to A and C: still AC', 69.1, 69.7, 70.4, 71],
+      ['W(ABC) = W(AC), wherever SQ is', 72, 72.8, 80.4, 81],
+    ]);
+    st.legend = prog(t, 82.5, 83.5);
+    st.legendItems = [['hatch', 'Winset of A and B'], ['cross', 'Winset of ABC or AC']];
+    return st;
+  }
+
+  function build14plane(t) {
+    const st = blank();
+    st.sceneOp = prog(t, 89, 90.2);
+    const bookP = prog(t, 121.5, 123);
+    st.book = t >= 121.5;
+    st.grid = 1 - 0.6 * bookP;
+    const S = along(t, sqTour2, SQb), D = along(t, d2Moves, D2in), P = Q;
+    const dS = easeOutBack(prog(t, 96.5, 97.2));
+    st.players = [...K3.map(k => ({ k, x: P[k].x, y: P[k].y, s: 1 })), { k: 'D', x: D.x, y: D.y, s: dS, lo: [0, -22] }];
+    const sqs = easeOutBack(prog(t, 89.6, 90.3));
+    st.markers.push({ x: S.x, y: S.y, s: sqs, label: 'SQ', labelOp: clamp(sqs), offset: [14, 19] });
+    st.core = { pts: hull(dS > 0 ? [P.A, P.B, P.C, D] : [P.A, P.B, P.C]), fill: 0.9 * (1 - bookP), stroke: 1, solid: true };
+
+    const fills = 1 - bookP;
+    [['A', 90.5, 92], ['B', 91, 92.5], ['C', 91.5, 93]].forEach(([k, a, b]) =>
+      st.rings.push({ k, c: P[k], S, p: ease(prog(t, a, b)), op: 1, fill: 0.07 * prog(t, b, b + 1) * fills }));
+    st.rings.push({ k: 'D', c: D, S, p: ease(prog(t, 97.4, 99.4)), op: 1, fill: 0.08 * prog(t, 99.4, 100.2) * fills });
+
+    st.winsets.push({ centers: [P.A, P.B, P.C], S, style: 'ghost', op: prog(t, 113, 114) * (1 - prog(t, 119.5, 120.5)), wipe: 1 });
+    st.winsets.push({ centers: dS > 0 ? [P.A, P.B, P.C, D] : [P.A, P.B, P.C], S, style: 'main', op: t >= 93 ? 1 : 0,
+      wipe: ease(prog(t, 93, 94.5)), outline: prog(t, 94, 94.8) * (1 - bookP) });
+
+    const plOp = t < 110 ? prog(t, 94.5, 95.3) * (1 - prog(t, 100, 100.5)) : prog(t, 121.5, 122.5);
+    if (plOp > 0) {
+      st.labels.push({ text: 'W(ABC)', x: 96, y: 446, op: plOp, cls: 'wl' });
+      st.lines.push({ ...pointer({ x: 122, y: 432 }, { x: 299, y: 318 }, 0, 3), op: plOp, cls: 'pointer' });
+    }
+    st.readout = pickReadout(t, [
+      ['D absorbed: W(ABCD) = W(ABC)', 99.6, 100.3, 109.4, 110],
+      ['D outside: core grows, winset shrinks', 113.5, 114.3, 118.8, 119.4],
+    ]);
+    st.legend = 0;
+    return st;
+  }
+
+  const init123 = (withD) => ({ A: G.A, B: G.B, C: G.C, D: D0, SQ: SQ1, includeD: withD });
+  const chapters = [
+    { tab: 'Figure 1.2: three veto players', scenes: scenes12, build: build12, init: init123(false) },
+    { tab: 'Figure 1.3: adding a fourth', scenes: scenes13, build: build13, init: init123(true) },
+    { tab: 'Figures 1.4–1.5: absorbed veto players', scenes: scenes14, build: build14,
+      init: { A: Q.A, B: Q.B, C: Q.C, D: D2in, SQ: SQb, includeD: true } },
+  ];
+
+  // ---------- explore ----------
+  const live = { A: { ...G.A }, B: { ...G.B }, C: { ...G.C }, D: { ...D0 }, SQ: { ...SQ1 } };
+  let includeD = false, liveCh = -1;
+  function resetLive() {
+    const c = chapters[chIdx].init;
+    ['A', 'B', 'C', 'D', 'SQ'].forEach(k => Object.assign(live[k], c[k]));
+    includeD = c.includeD; liveCh = chIdx;
+  }
+  const exploreScene = { title: 'Try it yourself',
+    body: 'Drag the status quo or any of the players. Outside the shaded core, the hatched winset shows every policy all the veto players prefer to SQ. Move SQ into the core and the winset disappears. Add or remove D to compare three and four veto players.' };
+
+  function buildExplore() {
+    const st = blank(), ks = includeD ? ['A', 'B', 'C', 'D'] : K3, S = live.SQ, pts = ks.map(k => live[k]);
+    const inside = inHull(S, pts);
+    st.players = ks.map(k => ({ k, x: live[k].x, y: live[k].y, s: 1 }));
+    st.markers = [{ x: S.x, y: S.y, s: 1, label: 'SQ', labelOp: 1 }];
+    st.hitSQ = S;
+    st.core = { pts: hull(pts), fill: 0.75, stroke: 1, solid: true };
+    ks.forEach(k => st.rings.push({ k, c: live[k], S, p: 1, op: 1, fill: 0.07 }));
+    if (includeD) st.winsets.push({ centers: K3.map(k => live[k]), S, style: 'ghost', op: 1, wipe: 1 });
+    st.winsets.push({ centers: pts, S, style: 'main', op: 1, wipe: 1, outline: 1, label: { text: 'W(SQ)', op: 1, minArea: 600 } });
+    st.readout = { text: inside ? 'W(SQ) = ∅, so SQ is in the core' : 'W(SQ) ≠ ∅, so SQ can be beaten', op: 1 };
+    return st;
+  }
+
+  // ---------- state & UI ----------
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let chIdx = 0, t = 0, playing = false, mode = 'walk', lastTs = null, capKey = null, capToken = 0;
+  const CH = () => chapters[chIdx];
+  const TOTAL = () => { const s = CH().scenes; return s[s.length - 1].end; };
+  const track = $('track'), exploreBtn = $('exploreBtn'), playBtn = $('playBtn');
+  const capText = $('capText'), stepLabel = $('stepLabel'), capTitle = $('capTitle'), capBody = $('capBody');
+  const exploreTools = $('exploreTools'), toggleDBtn = $('toggleDBtn'), legendVeto = $('legendVeto');
+  let segs = [];
+
+  const tabs = chapters.map((c, i) => {
+    const b = document.createElement('button');
+    b.className = 'tab'; b.setAttribute('role', 'tab'); b.textContent = c.tab;
+    b.addEventListener('click', () => setChapter(i));
+    $('tabs').appendChild(b); return b;
+  });
+
+  function buildTrack() {
+    track.innerHTML = '';
+    segs = CH().scenes.map((s, i) => {
+      const b = document.createElement('button');
+      b.className = 'seg'; b.style.setProperty('--d', s.end - s.start);
+      b.setAttribute('aria-label', `Go to step ${i + 1}: ${s.title}`);
+      b.appendChild(document.createElement('span'));
+      b.addEventListener('click', e => { if (e.detail === 0) goScene(i); });
+      track.appendChild(b); return b;
+    });
+  }
+
+  const sceneAt = tt => { const sc = CH().scenes; let i = 0; for (let k = 0; k < sc.length; k++) if (tt >= sc[k].start) i = k; return i; };
+  const curScene = () => sceneAt(Math.min(t, TOTAL() - 0.0001));
+
+  function updateCaption() {
+    const idx = mode === 'explore' ? -1 : curScene();
+    const key = chIdx + ':' + idx;
+    if (key === capKey) return;
+    const first = capKey === null;
+    capKey = key;
+    const sc = idx === -1 ? exploreScene : CH().scenes[idx];
+    const label = idx === -1 ? 'Free exploration' : `Step ${idx + 1} of ${CH().scenes.length}`;
+    const token = ++capToken;
+    const apply = () => {
+      if (token !== capToken) return;
+      stepLabel.textContent = label; capTitle.textContent = sc.title; capBody.textContent = sc.body;
+      capText.style.opacity = 1;
+    };
+    if (first || reduce) apply(); else { capText.style.opacity = 0; setTimeout(apply, 170); }
+  }
+
+  function updateChrome() {
+    const cur = mode === 'explore' ? -1 : curScene();
+    segs.forEach((b, i) => {
+      const s = CH().scenes[i];
+      b.firstChild.style.width = (mode === 'explore' ? 100 : prog(t, s.start, s.end) * 100) + '%';
+      b.classList.toggle('cur', i === cur);
+      b.setAttribute('aria-current', i === cur ? 'step' : 'false');
+    });
+    track.classList.toggle('dim', mode === 'explore');
+    $('time').textContent = mode === 'explore' ? '' : `${fmt(t)} / ${fmt(TOTAL())}`;
+    exploreTools.hidden = mode !== 'explore';
+    toggleDBtn.textContent = includeD ? 'Remove D' : 'Add D';
+    legendVeto.hidden = !(mode === 'explore' ? includeD : chIdx >= 1);
+    $('legendCross').hidden = !(mode === 'walk' && chIdx === 2);
+    tabs.forEach((b, i) => b.setAttribute('aria-selected', String(i === chIdx)));
+  }
+
+  function draw() {
+    render(mode === 'explore' ? buildExplore() : CH().build(t));
+    updateCaption(); updateChrome();
+  }
+
+  const PLAY = '<path d="M8 5l11 7-11 7z" fill="currentColor"/>';
+  const PAUSE = '<path d="M7 5h3.6v14H7zM13.4 5H17v14h-3.6z" fill="currentColor"/>';
+  function setPlaying(v) {
+    if (v === playing) return;
+    playing = v;
+    $('playIcon').innerHTML = v ? PAUSE : PLAY;
+    playBtn.setAttribute('aria-label', v ? 'Pause' : 'Play');
+    playBtn.title = v ? 'Pause (space)' : 'Play (space)';
+    if (v) {
+      if (mode === 'explore') exitExplore(false);
+      if (t >= TOTAL()) t = 0;
+      exploreBtn.classList.remove('ready');
+      lastTs = null; requestAnimationFrame(tick);
+    }
+  }
+  function tick(ts) {
+    if (!playing) { lastTs = null; return; }
+    if (lastTs !== null) t += Math.min(0.1, (ts - lastTs) / 1000);
+    lastTs = ts;
+    if (t >= TOTAL()) { t = TOTAL(); setPlaying(false); exploreBtn.classList.add('ready'); draw(); return; }
+    draw(); requestAnimationFrame(tick);
+  }
+
+  function goScene(i) {
+    if (mode === 'explore') exitExplore(false);
+    const sc = CH().scenes; i = clamp(i, 0, sc.length - 1);
+    t = (reduce && !playing) ? sc[i].end - 0.001 : sc[i].start;
+    exploreBtn.classList.remove('ready');
+    draw();
+  }
+
+  function setChapter(i) {
+    if (mode === 'explore') exitExplore(false);
+    setPlaying(false);
+    chIdx = i; capKey = null; buildTrack();
+    exploreBtn.classList.remove('ready');
+    t = reduce ? CH().scenes[0].end - 0.001 : 0;
+    draw();
+    if (!reduce) setPlaying(true);
+  }
+
+  const hits = () => [hitSQ, ...['A', 'B', 'C', 'D'].map(k => pl[k].hit)];
+  function enterExplore() {
+    setPlaying(false);
+    mode = 'explore';
+    if (liveCh !== chIdx) resetLive();
+    figure.classList.add('explore');
+    exploreBtn.textContent = 'Back to steps';
+    exploreBtn.setAttribute('aria-pressed', 'true');
+    exploreBtn.classList.remove('ready');
+    hits().forEach(h => h.setAttribute('tabindex', '0'));
+    draw();
+  }
+  function exitExplore(redraw = true) {
+    mode = 'walk';
+    figure.classList.remove('explore');
+    exploreBtn.textContent = 'Try it yourself';
+    exploreBtn.setAttribute('aria-pressed', 'false');
+    hits().forEach(h => h.setAttribute('tabindex', '-1'));
+    if (redraw) draw();
+  }
+
+  playBtn.addEventListener('click', () => setPlaying(!playing));
+  $('restartBtn').addEventListener('click', () => {
+    if (mode === 'explore') exitExplore(false);
+    exploreBtn.classList.remove('ready');
+    if (reduce) { setPlaying(false); t = CH().scenes[0].end - 0.001; draw(); }
+    else { t = 0; draw(); setPlaying(true); }
+  });
+  $('nextBtn').addEventListener('click', () => {
+    if (mode === 'explore') return;
+    const cur = curScene();
+    if (cur === CH().scenes.length - 1) enterExplore(); else goScene(cur + 1);
+  });
+  $('prevBtn').addEventListener('click', () => {
+    if (mode === 'explore') { exitExplore(false); t = TOTAL() - 0.001; draw(); return; }
+    const cur = curScene();
+    if (!reduce && t - CH().scenes[cur].start > 1.2) goScene(cur); else goScene(cur - 1);
+  });
+  exploreBtn.addEventListener('click', () => {
+    if (mode === 'explore') { exitExplore(false); t = TOTAL(); draw(); } else enterExplore();
+  });
+  toggleDBtn.addEventListener('click', () => { includeD = !includeD; draw(); });
+  $('resetBtn').addEventListener('click', () => { resetLive(); draw(); });
+
+  // scrubbing
+  let scrubbing = false;
+  function scrubTo(e) {
+    const x = e.clientX, sc = CH().scenes;
+    let nt = TOTAL();
+    for (let i = 0; i < segs.length; i++) {
+      const r = segs[i].getBoundingClientRect();
+      if (x <= r.right + 1.5) { nt = sc[i].start + clamp((x - r.left) / r.width) * (sc[i].end - sc[i].start); break; }
+    }
+    if (mode === 'explore') exitExplore(false);
+    exploreBtn.classList.remove('ready');
+    t = clamp(nt, 0, TOTAL());
+    draw();
+  }
+  track.addEventListener('pointerdown', e => { scrubbing = true; try { track.setPointerCapture(e.pointerId); } catch (_) {} scrubTo(e); });
+  track.addEventListener('pointermove', e => { if (scrubbing) scrubTo(e); });
+  track.addEventListener('pointerup', () => { scrubbing = false; });
+  track.addEventListener('pointercancel', () => { scrubbing = false; });
+
+  // dragging in explore mode
+  let drag = null;
+  function svgPt(e) {
+    const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    return { x: clamp(p.x, 12, W - 12), y: clamp(p.y, 12, H - 12) };
+  }
+  svg.addEventListener('pointerdown', e => {
+    if (mode !== 'explore') return;
+    const k = e.target && e.target.dataset ? e.target.dataset.key : null;
+    if (!k) return;
+    drag = k;
+    try { e.target.setPointerCapture(e.pointerId); } catch (_) {}
+    e.preventDefault();
+  });
+  svg.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const p = svgPt(e); live[drag].x = p.x; live[drag].y = p.y; draw();
+  });
+  svg.addEventListener('pointerup', () => { drag = null; });
+  svg.addEventListener('pointercancel', () => { drag = null; });
+  svg.addEventListener('keydown', e => {
+    const k = e.target && e.target.dataset ? e.target.dataset.key : null;
+    if (!k || mode !== 'explore') return;
+    const step = e.shiftKey ? 30 : 8;
+    const mv = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
+    if (!mv) return;
+    e.preventDefault(); e.stopPropagation();
+    live[k].x = clamp(live[k].x + mv[0], 12, W - 12);
+    live[k].y = clamp(live[k].y + mv[1], 12, H - 12);
+    draw();
+  });
+
+  document.addEventListener('keydown', e => {
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (e.target.classList && e.target.classList.contains('hit')) return;
+    if (e.key === ' ' && tag !== 'button') { e.preventDefault(); if (mode === 'explore') return; setPlaying(!playing); }
+    else if (e.key === 'ArrowRight') $('nextBtn').click();
+    else if (e.key === 'ArrowLeft') $('prevBtn').click();
+  });
+
+  // start
+  buildTrack();
+  if (reduce) { t = CH().scenes[0].end - 0.001; draw(); }
+  else { t = 0; draw(); setTimeout(() => { if (!playing && mode === 'walk' && t === 0) setPlaying(true); }, 700); }
+
+})();
+</script>
+</body>
+</html>
