@@ -1,100 +1,318 @@
 <!DOCTYPE html>
-<!-- This HTML file provides a simple example of a portfolio page. It contains a header, a few sections, and a few charts. -->
-<!-- It works with the three css files in this folder: example1.css, example2.css and example3.css. -->
-<!-- The HTML file defines the structure of the page, and the CSS files define how it looks. -->
-<!-- The CSS examples are all designed to work with this page. Try swapping them out on line 29 and see what happens. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portfolio | Veronica Cunha</title>
 
-<!-- Take a look around and make your own copy to adapt for your own use. -->
+  <!-- Same fonts as index.html -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
 
-<!-- This is a comment -->
-<!-- Comments are not displayed in the browser -->
-<!-- They can be used to leave notes in the code -->
+  <!-- Vega libraries, pinned to exact versions so the page keeps working -->
+  <script src="https://cdn.jsdelivr.net/npm/vega@5.30.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.21.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.26.0"></script>
 
-<html> 
-    <!-- HTML is heirarchial: tags like this define elements on the page. 
-    Each tag does something different. For example:
-        - The <html> tag defines the whole document.
-        - The <h1> tag defines a large heading
-        - The <p> tag defines a paragraph
-        - Tags appear as an opening <div> and closing </div> pair
-    -->
+  <style>
+    /* ---------- Colours and fonts: keep these identical to index.html ---------- */
+    :root {
+      color-scheme: light;
+      --paper: #fffff8;
+      --ink: #1c2026;
+      --muted: #5d6671;
+      --rule: #e0ddd3;
+      --accent: #24527a;
+      --serif: "Newsreader", Georgia, "Times New Roman", serif;
+      --sans: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+        --paper: #15181c;
+        --ink: #e6e8eb;
+        --muted: #9aa3ad;
+        --rule: #30363d;
+        --accent: #8cb6dc;
+      }
+    }
 
-<head>    
-    <!-- The head tag links to resources our page needs and defines information about it. Tags in the <head> aren't displayed on the page. -->
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 1.0625rem;
+      line-height: 1.6;
+    }
+    a { color: inherit; }
+    a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+      border-radius: 2px;
+    }
 
-    <!-- This is a link to a stylesheet which contains rules about how each element on the page should be defined-->
-    <!-- Try swapping to example3.css or another, and take a look at each example.css to see if you understand it-->
-    <link rel="stylesheet" type="text/css" href="Example3.css">
-    <title>My Portfolio</title> <!-- The title displayed in the browser tab, not on the page itself -->
+    /* ---------- Top bar: same as index.html ---------- */
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.5rem;
+      padding: 1.5rem clamp(1.25rem, 5vw, 4rem);
+    }
+    .site-name {
+      font-weight: 600;
+      font-size: 1.125rem;
+      text-decoration: none;
+    }
+    .site-links { display: flex; gap: 1.5rem; font-size: 0.95rem; }
+    .site-links a { color: var(--muted); text-decoration: none; }
+    .site-links a:hover {
+      color: var(--ink);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
 
-    <!-- This is a link to the vega-lite packages which we're using to make graphs -->
-    <script src="https://cdn.jsdelivr.net/npm/vega@6.4.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-lite@6.4.3"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-embed@7.3.0"></script>
+    /* ---------- Page title: a smaller echo of the index headline ---------- */
+    .page-head {
+      max-width: 48rem;
+      margin: 0 auto;
+      padding: clamp(2.5rem, 9vh, 5rem) 1.25rem clamp(2rem, 6vh, 3rem);
+      text-align: center;
+    }
+    .page-head h1 {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: clamp(2.5rem, 1.9rem + 3vw, 4rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.75rem;
+    }
+    .page-head p { color: var(--muted); margin: 0; }
 
-    <style>
-        /* CSS styles can be defined here, or in a separate CSS file */
-        #chartGrid {
-            display: flex;
-        }
-        
-    </style>
+    /* ---------- Contents: same ruled rows as the index page list ---------- */
+    .pages {
+      max-width: 42rem;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+    .pages ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .pages li { border-top: 1px solid var(--rule); }
+    .page-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 1.1rem 0;
+      text-decoration: none;
+    }
+    .page-title {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.55rem);
+      line-height: 1.2;
+      /* underline that draws in from the left on hover */
+      background-image: linear-gradient(currentColor, currentColor);
+      background-repeat: no-repeat;
+      background-position: 0 100%;
+      background-size: 0% 1px;
+      transition: background-size 0.35s ease;
+    }
+    a.page-row:hover .page-title,
+    a.page-row:focus-visible .page-title { background-size: 100% 1px; }
+    .page-note {
+      color: var(--muted);
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    /* ---------- Challenge sections ---------- */
+    .challenges {
+      max-width: 48rem;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+    .challenge {
+      margin-top: 4.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--rule);
+    }
+    .challenge h2 {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: clamp(1.6rem, 1.4rem + 0.8vw, 2rem);
+      line-height: 1.2;
+      margin: 0 0 1rem;
+    }
+    .challenge > p { max-width: 40rem; }
+    .chart {
+      margin: 1.75rem 0 0.4rem;
+      overflow-x: auto;       /* wide charts scroll instead of breaking the page */
+    }
+    .source { color: var(--muted); font-size: 0.875rem; margin: 0 0 1.5rem; }
+    /* Sliders and other controls that some charts add below themselves */
+    .vega-bind {
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+    .vega-bind input[type="range"] { accent-color: var(--accent); vertical-align: middle; }
+
+    .site-footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.875rem;
+      padding: 5rem 1.25rem 2.5rem;
+    }
+
+    /* ---------- Media queries go LAST so they override the rules above ---------- */
+    @media (max-width: 30rem) {
+      .page-row { flex-direction: column; gap: 0.2rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .page-title { transition: none; }
+    }
+  </style>
 </head>
+<body>
 
-<body> 
-<!-- The body tag contains the elements that visitors to our page will see. -->
-    <h1 class="big" style="margin-bottom: 0px;"> <!-- We have added a class to the header called "big" which we can use to style it in the CSS -->
-        <!-- This is a header, it is the largest text on the page -->
-        Verónica Cunha
-    </h1>
-    <p style="margin-top: 0px; color: darkblue">
-        <!-- we're setting the margin to 0px so the header and authour name are close together -->
-        Your Name | <a href="https://www.linkedin.com/in/veronicasccunha/">LinkedIn</a> | <a
-            href="https://www.github.com/vsccunha">GitHub</a>
-    </p>
-    <h3 class="small"> <!-- We have added a class to the header called "small" which we can use to style it in the CSS -->
-        This page acts as your portfolio of charts. You can use it as a good starting point to display your work but make sure to customise it to make it your own, or even start from scratch.  
-    </h3>
+  <header class="site-header">
+    <a class="site-name" href="index.html">VERONICA CUNHA</a>
+    <nav class="site-links" aria-label="Profiles">
+      <a href="https://github.com/vsccunha" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/veronicasccunha/" target="_blank" rel="noopener">LinkedIn</a>
+    </nav>
+  </header>
 
-    <!-- We're organising the page into sections, with each section containing a chart, title and a description -->
-    <section>
-        <div class="chart-description">
-            <h2>Section 1: A basic chart</h2>
-            <p> <!-- This is a paragraph, it's the main way to display text on a web page -->
-                We've organised the page into sections, with each section containing a chart, title and a description. Here, we can describe the chart and give some context.
-                As a first example, we're using a basic chart from our repo.
-            </p>
-        </div>
-
-        <!-- This element will contain our vega-lite chart -->
-        <figure id="Location1"></figure> <!-- we give it an id so we can put a vega-lite graph here with VegaEmbed -->
-
+  <main>
+    <section class="page-head">
+      <h1>Portfolio</h1>
+      <p>Coding challenges CC1–CC10</p>
     </section>
 
-    <!-- Do you want to add more sections? -->
-        <!-- Try copying pasting the section above -->
-        <!-- You'll need to change the id of the figure "<figure id="Location2"... -->
-        <!-- ... and add a new variable for the graph spec in the script at the bottom of the page -->
+    <!-- Contents: add one <li> per new challenge, linking to its section id -->
+    <nav class="pages" aria-label="Challenges on this page">
+      <ul>
+        <li>
+          <a class="page-row" href="#cc1">
+            <span class="page-title">Hosting</span>
+            <span class="page-note">CC1</span>
+          </a>
+        </li>
+        <li>
+          <a class="page-row" href="#cc2">
+            <span class="page-title">Building</span>
+            <span class="page-note">CC2</span>
+          </a>
+        </li>
+        <li>
+          <a class="page-row" href="#cc3">
+            <span class="page-title">Policy debate</span>
+            <span class="page-note">CC3</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
 
+    <div class="challenges">
 
-    <!-- This is a script, it's a way to run JavaScript code on the page -->
-    <script>
-        // This is a comment in JavaScript - it's a different language to HTML and CSS
+      <!-- ===================== CC1 ===================== -->
+      <section class="challenge" id="cc1">
+        <h2>CC1. Hosting: displaying charts in my own site</h2>
 
-        let figure_1_spec = "https://raw.githubusercontent.com/EconomicsObservatory/courses/main/2/s2_chart2.json"; // We're storing the URL of the graph we want to display in a variable
-        // You should have a spec for a graph in this same folder. Just specify its name here, e.g. let figure_1_spec = "chart1.json"
+        <div id="cc1-chart1" class="chart"></div>
+        <p class="source">Chart: <a href="https://github.com/RDeconomist/RDeconomist.github.io/blob/main/charts/ukMacro/govtYieldsUSUKGer_dark.json">Richard Davies</a>. Data: FRED, Bank of England, Bundesbank.</p>
 
-        vegaEmbed('#Location1', figure_1_spec) // We're using the vegaEmbed function to put a graph in the element with id figure_1
-        
-        // Do you want to add more graphs?
-        // try defining a new variable for figure_2_spec, adding VegaEmbed for Location2, and adding a new section in the HTML
-        // e.g. 
-        // let figure_2_spec = ...
-        // vegaEmbed('#Location2', figure_2_spec)
+        <div id="cc1-chart2" class="chart"></div>
+        <p class="source">Chart: <a href="https://github.com/RDeconomist/RDeconomist.github.io/blob/main/charts/ukMacro/exr_usdgbp_slider.json">Richard Davies</a>. Data: Bank of England (series XUDLUSS).</p>
+      </section>
 
+      <!-- ===================== CC2 ===================== -->
+      <section class="challenge" id="cc2">
+        <h2>CC2. Building: my own visualisations</h2>
 
-    </script>
+        <div id="cc2-chart1" class="chart"></div>
+        <p class="source">Data: ADD DATA SOURCE</p>
+
+        <div id="cc2-chart2" class="chart"></div>
+        <p class="source">Data: ADD DATA SOURCE</p>
+      </section>
+
+      <!-- ===================== CC3 ===================== -->
+      <section class="challenge" id="cc3">
+        <h2>CC3. Policy debate</h2>
+
+        <!-- Your policy topic. Max 25 words, written by you
+             (course rules: no AI-drafted prose). -->
+        <p>[WRITE YOUR POLICY TOPIC HERE]</p>
+
+        <div id="cc3-chart1" class="chart"></div>
+        <p class="source">Data: ADD DATA SOURCE</p>
+
+        <div id="cc3-chart2" class="chart"></div>
+        <p class="source">Data: ADD DATA SOURCE</p>
+
+        <!-- Your commentary on what the charts show. Max 25 words,
+             written by you. Keep it right next to the charts. -->
+        <p>[WRITE YOUR COMMENTARY HERE]</p>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    Charts built with Vega-Lite. Hosted on GitHub Pages.
+  </footer>
+
+  <script>
+    // ---------- Settings shared by every chart ----------
+    // These make charts blend into the page: page background, page font,
+    // and light text when the visitor's device is in dark mode.
+    const pageColour = getComputedStyle(document.documentElement).getPropertyValue("--paper").trim();
+    const darkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    const chartOptions = {
+      actions: false,                        // hide the "..." menu on each chart
+      renderer: "svg",                       // crisp text that uses the page font
+      theme: darkMode ? "dark" : undefined,  // (we'll revisit this for CC4)
+      config: {
+        background: pageColour,
+        font: "Public Sans, system-ui, sans-serif"
+      }
+    };
+
+    // ---------- CC1: two charts I found in the course chart library ----------
+    let figure_1_spec = "https://raw.githubusercontent.com/RDeconomist/RDeconomist.github.io/main/charts/ukMacro/govtYieldsUSUKGer_dark.json";
+    let figure_2_spec = "https://raw.githubusercontent.com/RDeconomist/RDeconomist.github.io/main/charts/ukMacro/exr_usdgbp_slider.json";
+
+    vegaEmbed('#cc1-chart1', figure_1_spec, chartOptions);
+    vegaEmbed('#cc1-chart2', figure_2_spec, chartOptions);
+
+    // ---------- CC2: my own charts from the Economics Observatory Data Hub ----------
+    let figure_3_spec = "charts/cc2_chart1.json";
+    let figure_4_spec = "charts/cc2_chart2.json";
+
+    vegaEmbed('#cc2-chart1', figure_3_spec, chartOptions);
+    vegaEmbed('#cc2-chart2', figure_4_spec, chartOptions);
+
+    // ---------- CC3: policy debate charts ----------
+    let figure_5_spec = "charts/cc3_chart1.json";
+    let figure_6_spec = "charts/cc3_chart2.json";
+
+    vegaEmbed('#cc3-chart1', figure_5_spec, chartOptions);
+    vegaEmbed('#cc3-chart2', figure_6_spec, chartOptions);
+  </script>
 
 </body>
-    
 </html>
