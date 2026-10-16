@@ -7,14 +7,14 @@
     "subtitleFontStyle":"italic",
     "subtitleFontSize":10,
     "anchor": "start",
-    "color": "#cbc7cf",
-    "subtitleColor":"#cbc7cf"},
+    "color": "#222222",
+    "subtitleColor":"#222222"},
 
   "width":280,
   "height":300,
 
   "config": {
-    "background":"#122b39",
+    "background":"#FAF9F6",
     "view": {
         "stroke": "transparent"}},
 
@@ -62,7 +62,7 @@
             "title": null,
             "axis": {
             "grid": false,
-            "labelColor":"#cbc7cf"}},
+            "labelColor":"#222222"}},
 
             "y": {
             "field": "Value",                
@@ -71,6 +71,6 @@
             "scale":{"domain":[0.5, 2.5]},
             "axis": {
                 "grid": false,
-                "labelColor":"#cbc7cf"}}
+                "labelColor":"#222222"}}
                 }
               }
