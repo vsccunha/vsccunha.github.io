@@ -7,11 +7,11 @@
   "subtitleFontStyle":"italic",
   "subtitleFontSize":10,
   "anchor": "start",
-  "color": "#cbc7cf",
-  "subtitleColor":"#cbc7cf"},
+  "color": "#222222",
+  "subtitleColor":"#222222"},
 
   "config": {
-  "background":"#122b39",
+  "background":"#FAF9F6",
   "view": {"stroke": "transparent"}},
   
     "data": {
