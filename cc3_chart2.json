@@ -1,0 +1,18 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Share of population unable to keep home adequately warm, Portugal vs EU-27",
+  "data": {
+    "url": "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/eurostat_warm-house_clean.csv"
+  },
+  "mark": {"type": "line", "point": true},
+  "encoding": {
+    "x": {"field": "TIME_PERIOD", "type": "ordinal", "title": "Year"},
+    "y": {
+      "field": "OBS_VALUE",
+      "type": "quantitative",
+      "title": "% of population"
+    },
+    "color": {"field": "geo", "type": "nominal", "title": "Country"}
+  },
+  "config": {}
+}
