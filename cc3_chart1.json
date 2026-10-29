@@ -11,7 +11,8 @@
     "url": "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/eurostat_renewable_energy_clean.csv"
   },
   "transform": [
-    {
+      {"filter": "datum.TIME_PERIOD >= 2020"},
+      {
       "calculate": "datum.nrg_bal == 'REN_ELC' ? 'Electricity' : 'Heating and cooling'",
       "as": "Sector"
     }
