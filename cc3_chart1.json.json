@@ -1,0 +1,44 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Share of renewable energy in electricity and in heating and cooling, Portugal vs EU-27",
+  "title": {
+    "text": "Share of renewable energy in electricity (first graph) and in heating and cooling (second graph)",
+    "subtitle": "Yearly, in % of total consumption",
+    "anchor": "start",
+    "fontSize": 16
+  },
+  "data": {
+    "url": "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/eurostat_renewable_energy_clean.csv"
+  },
+  "transform": [
+    {
+      "calculate": "datum.nrg_bal == 'REN_ELC' ? 'Electricity' : 'Heating and cooling'",
+      "as": "Sector"
+    }
+  ],
+  "width": 300,
+  "height": 300,
+  "mark": {"type": "line", "point": true},
+  "encoding": {
+    "column": {
+      "field": "Sector",
+      "type": "nominal",
+      "title": null,
+      "header": {"labelFontSize": 13, "labelAnchor": "start"}
+    },
+    "x": {
+      "field": "TIME_PERIOD",
+      "type": "ordinal",
+      "title": "",
+      "axis": {"labelAngle": 0, "grid": false}
+    },
+    "y": {"field": "OBS_VALUE", "type": "quantitative", "title": ""},
+    "color": {
+      "field": "geo",
+      "type": "nominal",
+      "title": "Country",
+      "legend": {"labelExpr": "datum.label == 'PT' ? 'Portugal' : 'EU-27'"}
+    }
+  },
+  "config": {"axis": {"grid": false}}
+}
