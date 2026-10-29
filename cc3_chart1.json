@@ -3,7 +3,7 @@
   "description": "Share of renewable energy in electricity and in heating and cooling, Portugal vs EU-27",
   "title": {
     "text": "Share of renewable energy in electricity and in heating and cooling",
-    "subtitle": "Yearly, in % of each section total consumption",
+    "subtitle": "Yearly, in % of each sector's total consumption",
     "anchor": "start",
     "fontSize": 16
   },
