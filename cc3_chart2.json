@@ -1,6 +1,12 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Share of population unable to keep home adequately warm, Portugal vs EU-27",
+  "description": "Share of population unable to keep home adequately warm",
+  "title": {
+    "text": "Share of population unable to keep home adequately warm",
+    "subtitle":"Yearly, % of population",
+    "anchor": "start",
+    "fontSize": 16,
+  },
   "height": "300",
   "width": "container",
   "data": {
@@ -8,13 +14,25 @@
   },
   "mark": {"type": "line", "point": true},
   "encoding": {
-    "x": {"field": "TIME_PERIOD", "type": "ordinal", "title": "Year"},
+    "x": {
+      "field": "TIME_PERIOD",
+      "type": "ordinal",
+      "title": "",
+      "axis": {"labelAngle":0, "grid": false},
+    },
     "y": {
       "field": "OBS_VALUE",
       "type": "quantitative",
-      "title": "% of population"
-    },
-    "color": {"field": "geo", "type": "nominal", "title": "Country"}
+      "title":""
+      },
+    "color":{
+      "field": "geo",
+      "type": "nominal",
+      "title": "Country",
+      "legend": {"labelExpr": "datum.label == 'PT' ? 'Portugal' : 'EU-27'"},
+      }
   },
-  "config": {}
+  "config": {
+    "axis": {"grid": false}
+  }
 }
