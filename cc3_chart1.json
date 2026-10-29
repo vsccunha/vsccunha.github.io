@@ -2,8 +2,8 @@
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Share of renewable energy in electricity and in heating and cooling, Portugal vs EU-27",
   "title": {
-    "text": "Share of renewable energy in electricity (first graph) and in heating and cooling (second graph)",
-    "subtitle": "Yearly, in % of total consumption",
+    "text": "Share of renewable energy in electricity and in heating and cooling",
+    "subtitle": "Yearly, in % of each section total consumption",
     "anchor": "start",
     "fontSize": 16
   },
