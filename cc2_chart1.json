@@ -3,7 +3,7 @@
   "title": {
     "text": "Wine Consumption in  Italy since 2006 until 2022",
     "anchor": "start",
-    "subtitle": "Population over 11 consuming wine, %  | Source: Istat through ECO-API",
+    "subtitle": "Population over 11 consuming wine, %",
     "fontSize": "14",
     "subtitleFontSize": "12",
     "color": "#000000",
