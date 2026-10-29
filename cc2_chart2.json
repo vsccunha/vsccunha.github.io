@@ -3,7 +3,7 @@
   "title": {
     "text": "Germany's GDP since 1991 until 2023",
     "anchor": "start",
-    "subtitle": "Quarterly, price and season adjusted, EUR (millions) | Source: Destatis through ECO API",
+    "subtitle": "Quarterly, price and season adjusted, EUR (millions)",
     "fontSize": "14",
     "subtitleFontSize": "12",
     "color": "#000000",
