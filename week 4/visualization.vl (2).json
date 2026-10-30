@@ -1,0 +1,278 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Replication of the European Commission's chart of the proposed EU budget for 2028-2034 (State of the Union 2025).",
+  "width": 720,
+  "height": 580,
+  "padding": 0,
+  "autosize": {"type": "none"},
+  "background": "#52a3ff",
+  "config": {"view": {"stroke": null}, "font": "Arial, Helvetica, sans-serif"},
+  "layer": [
+    {
+      "description": "Background: light blue at the top fading to darker blue at the bottom",
+      "data": {"values": [{}]},
+      "mark": {
+        "type": "rect",
+        "color": {
+          "gradient": "linear",
+          "x1": 0,
+          "y1": 0,
+          "x2": 0,
+          "y2": 1,
+          "stops": [
+            {"offset": 0, "color": "#78c2ff"},
+            {"offset": 1, "color": "#2e88ff"}
+          ]
+        }
+      },
+      "encoding": {
+        "x": {"value": 0},
+        "x2": {"value": "width"},
+        "y": {"value": 0},
+        "y2": {"value": "height"}
+      }
+    },
+    {
+      "description": "The donut, with the amount and percentage printed on each slice",
+      "data": {
+        "url": "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%204/eu_budget_data.csv"
+      },
+      "transform": [
+        {
+          "calculate": "indexof(['European Competitiveness Fund', 'Erasmus+ & AgoraEU', 'Global Europe', 'Other', 'NextGenerationEU repayment', 'National and regional partnerships plans'], datum.Heading)",
+          "as": "sliceOrder"
+        }
+      ],
+      "encoding": {
+        "x": {"value": 360},
+        "y": {"value": 256},
+        "theta": {"field": "Amount", "type": "quantitative", "stack": true},
+        "order": {"field": "sliceOrder", "type": "quantitative"},
+        "color": {
+          "field": "Heading",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "European Competitiveness Fund",
+              "Erasmus+ & AgoraEU",
+              "Global Europe",
+              "Other",
+              "NextGenerationEU repayment",
+              "National and regional partnerships plans"
+            ],
+            "range": [
+              "#feed00",
+              "#f38820",
+              "#86d0ff",
+              "#b9cfe7",
+              "#535f75",
+              "#3d51fe"
+            ]
+          }
+        }
+      },
+      "layer": [
+        {
+          "mark": {
+            "type": "arc",
+            "innerRadius": 69,
+            "outerRadius": 106,
+            "thetaOffset": -0.5,
+            "theta2Offset": -0.5
+          }
+        },
+        {
+          "mark": {
+            "type": "text",
+            "radius": 88,
+            "dy": -9,
+            "fontSize": 11,
+            "fontWeight": "bold",
+            "thetaOffset": -0.5
+          },
+          "encoding": {
+            "text": {"field": "Amount", "type": "quantitative"},
+            "color": {
+              "condition": {
+                "test": "indexof(['National and regional partnerships plans', 'NextGenerationEU repayment'], datum.Heading) >= 0",
+                "value": "white"
+              },
+              "value": "#00006a"
+            }
+          }
+        },
+        {
+          "mark": {
+            "type": "text",
+            "radius": 88,
+            "dy": 8,
+            "fontSize": 15,
+            "fontWeight": "bold",
+            "thetaOffset": -0.5
+          },
+          "encoding": {
+            "text": {"field": "Percentage", "type": "nominal"},
+            "color": {
+              "condition": {
+                "test": "indexof(['National and regional partnerships plans', 'NextGenerationEU repayment'], datum.Heading) >= 0",
+                "value": "white"
+              },
+              "value": "#00006a"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "description": "Text in the hole of the donut",
+      "data": {"values": [{"t": "Total", "y": 236}]},
+      "mark": {"type": "text", "fontSize": 19, "color": "#00006a"},
+      "encoding": {
+        "text": {"field": "t"},
+        "x": {"value": 360},
+        "y": {"field": "y", "type": "quantitative", "scale": null}
+      }
+    },
+    {
+      "data": {"values": [{"t": "€2 trillion", "y": 266}]},
+      "mark": {
+        "type": "text",
+        "fontSize": 20,
+        "fontWeight": "bold",
+        "color": "#00006a"
+      },
+      "encoding": {
+        "text": {"field": "t"},
+        "x": {"value": 360},
+        "y": {"field": "y", "type": "quantitative", "scale": null}
+      }
+    },
+    {
+      "description": "Title",
+      "data": {"values": [{"t": "EU BUDGET FOR 2028-2034"}]},
+      "mark": {
+        "type": "text",
+        "fontSize": 27,
+        "fontWeight": 900,
+        "color": "#000063",
+        "baseline": "alphabetic"
+      },
+      "encoding": {
+        "text": {"field": "t"},
+        "x": {"value": 360},
+        "y": {"value": 52}
+      }
+    },
+    {
+      "description": "Slice names on the left of the donut (right-aligned). x and y are pixel positions traced from the original.",
+      "data": {
+        "values": [
+          {
+            "label": "National and regional\npartnerships plans",
+            "x": 226,
+            "y": 140
+          },
+          {"label": "NextGenerationEU\nrepayment", "x": 431, "y": 389}
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "baseline": "alphabetic",
+        "fontSize": 15,
+        "fontWeight": "bold",
+        "lineBreak": "\n",
+        "lineHeight": 25,
+        "color": "#0b2a8f"
+      },
+      "encoding": {
+        "text": {"field": "label"},
+        "x": {"field": "x", "type": "quantitative", "scale": null},
+        "y": {"field": "y", "type": "quantitative", "scale": null}
+      }
+    },
+    {
+      "description": "Slice names on the right of the donut (left-aligned)",
+      "data": {
+        "values": [
+          {"label": "European Competitiveness Fund", "x": 385, "y": 131},
+          {"label": "Erasmus+\n& AgoraEU", "x": 460, "y": 170},
+          {"label": "Global Europe", "x": 481, "y": 236},
+          {"label": "Other", "x": 481, "y": 298}
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "alphabetic",
+        "fontSize": 15,
+        "fontWeight": "bold",
+        "lineBreak": "\n",
+        "lineHeight": 25,
+        "color": "#0b2a8f"
+      },
+      "encoding": {
+        "text": {"field": "label"},
+        "x": {"field": "x", "type": "quantitative", "scale": null},
+        "y": {"field": "y", "type": "quantitative", "scale": null}
+      }
+    },
+    {
+      "description": "Line under 'Other'",
+      "data": {"values": [{}]},
+      "mark": {"type": "rule", "color": "#000063", "strokeWidth": 2},
+      "encoding": {
+        "x": {"value": 481},
+        "x2": {"value": 661},
+        "y": {"value": 306}
+      }
+    },
+    {
+      "description": "Programmes grouped under 'Other'",
+      "data": {
+        "values": [
+          {
+            "label": "Connecting Europe Facility\nCivil protection and health\nSingle market programme\nEuratom research & training\nCommon Foreign and Security Policy\nJustice\nNuclear decommissioning\nOverseas Countries and Territories\nPericles"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "alphabetic",
+        "fontSize": 13,
+        "lineBreak": "\n",
+        "lineHeight": 21,
+        "color": "#0b2a8f"
+      },
+      "encoding": {
+        "text": {"field": "label"},
+        "x": {"value": 481},
+        "y": {"value": 326}
+      }
+    },
+    {
+      "description": "Footnote",
+      "data": {
+        "values": [
+          {
+            "t": "All amounts in billion EUR, current prices, adjusted with 2% deflator"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "fontWeight": "bold",
+        "color": "#0c2090",
+        "baseline": "alphabetic"
+      },
+      "encoding": {
+        "text": {"field": "t"},
+        "x": {"value": 352},
+        "y": {"value": 562}
+      }
+    }
+  ]
+}
