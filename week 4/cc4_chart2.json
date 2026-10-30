@@ -2,7 +2,7 @@
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "A bar chart with highlighting on hover and selecting on click. (Inspired by Tableau's interaction style.)",
   "title": {
-    "text": "Proposed EU Budget 2028-2034",
+    "text": "Distribution of the 2 billion € proposed EU Budget for 2028-2034",
     "subtitle": "per heading, in € billion",
     "anchor": "start",
     "fontSize": 16
