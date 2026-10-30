@@ -1,0 +1,51 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "A bar chart with highlighting on hover and selecting on click. (Inspired by Tableau's interaction style.)",
+  "title": {
+    "text": "Proposed EU Budget 2028-2034",
+    "subtitle": "per heading, in € billion",
+    "anchor": "start",
+    "fontSize": 16
+  },
+  "width": 400,
+  "config": {"scale": {"bandPaddingInner": 0.2}},
+  "data": {
+    "url": "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%204/eu_budget_data.csv"
+  },
+  "params": [
+    {
+      "name": "highlight",
+      "select": {"type": "point", "on": "pointerover", "clear": "pointerout"}
+    },
+    {"name": "select", "select": "point"}
+  ],
+  "mark": {"type": "bar", "stroke": "black", "cursor": "pointer"},
+  "encoding": {
+    "x": {"field": "Amount", "type": "quantitative", "title": null},
+    "y": {
+      "field": "Heading",
+      "type": "nominal",
+      "sort": "-x",
+      "title": null,
+      "scale": {"paddingInner": 0.4},
+      "axis": {"labelFontSize": 12, "labelLimit": 350}
+    },
+    "color": {
+      "condition": {"param": "highlight", "empty": false, "value": "#f58518"},
+      "value": "#4c78a8"
+    },
+    "tooltip": [
+      {"field": "Heading", "type": "nominal", "title": "Heading"},
+      {"field": "Amount", "type": "quantitative", "title": "€ billion"},
+      {"field": "Percentage", "type": "nominal", "title": "Share of total"}
+    ],
+    "fillOpacity": {"condition": {"param": "select", "value": 1}, "value": 0.3},
+    "strokeWidth": {
+      "condition": [
+        {"param": "select", "empty": false, "value": 2},
+        {"param": "highlight", "empty": false, "value": 1}
+      ],
+      "value": 0
+    }
+  }
+}
