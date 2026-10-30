@@ -176,6 +176,15 @@
       padding: 5rem 1.25rem 2.5rem;
     }
 
+    /* Screenshot of the original chart in CC4 */
+      .original-chart {
+        display: block;
+        max-width: 100%;   /* never wider than the column */
+        height: auto;      /* keeps the original proportions */
+        margin: 1.75rem 0 0.4rem;
+        border: 1px solid var(--rule);
+      }
+    
     /* ---------- Media queries go LAST so they override the rules above ---------- */
     @media (max-width: 30rem) {
       .page-row { flex-direction: column; gap: 0.2rem; }
@@ -340,6 +349,14 @@
 
     vegaEmbed('#cc3-chart1', figure_5_spec, chartOptions);
     vegaEmbed('#cc3-chart2', figure_6_spec, chartOptions);
+
+    // ---------- CC4: replication and improvement ----------
+    let figure_7_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/cc4_chart1.json";
+    let figure_8_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/cc4_chart2.json";
+    
+    vegaEmbed('#cc4-chart1', figure_7_spec, { actions: false, renderer: "svg" });
+    vegaEmbed('#cc4-chart2', figure_8_spec, chartOptions);
+    
   </script>
 
 </body>
