@@ -10,7 +10,7 @@
   "height": 300,
   "width": "container",
   "data": {
-    "url": "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/eurostat_warm-house_clean.csv"
+    "url": "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%203/eurostat_warm-house_clean.csv"
   },
   "mark": {"type": "line", "point": true},
   "encoding": {
