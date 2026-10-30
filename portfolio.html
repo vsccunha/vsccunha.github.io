@@ -289,17 +289,17 @@
           <h2>CC4. Replication, re-create, then improve, someone else’s chart.</h2>
         
           <!-- The original chart (screenshot) -->
-          <img class="original-chart" src="cc4_original.jpg"
-               alt="Proposed EU Budget 2028-2034 presented at the State of the Union 2025">
+          <img class="original-chart" src="week 4/cc4_original.jpg"
+               alt="Proposed EU Budget 2028-2034 summary graph shared in a tweet by the European Commission, after the State of the Union 2025 speech.">
           <p class="source">Original chart: <a href="https://x.com/EU_Commission/status/1963984102240948459/photo/1">European Commission on X</a>.</p>
         
           <!-- My replication -->
           <div id="cc4-chart1" class="chart"></div>
-          <p class="source">Data: <a href="LINK TO DATA">European Commission</a>.</p>
+          <p class="source">Data: Used the one from the chart directly.</p>
         
           <!-- My improved version -->
           <div id="cc4-chart2" class="chart"></div>
-          <p class="source">Data: <a href="LINK TO DATA">European Commission</a>.</p>
+          <p class="source">Data: Used the one from the chart directly.</p>
         
           <!-- What you changed and why. Max 25 words, written by you. -->
           <p></p>
@@ -330,30 +330,30 @@
     };
 
     // ---------- CC1: two charts I found in the course chart library ----------
-    let figure_1_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/cc1_chart1.json";
-    let figure_2_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/cc1_chart2.json";
+    let figure_1_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%201/cc1_chart1.json";
+    let figure_2_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%201/cc1_chart2.json";
 
     vegaEmbed('#cc1-chart1', figure_1_spec, chartOptions);
     vegaEmbed('#cc1-chart2', figure_2_spec, chartOptions);
 
     // ---------- CC2: my own charts from the Economics Observatory Data Hub ----------
-    let figure_3_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/cc2_chart1.json";
-    let figure_4_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/cc2_chart2.json";
+    let figure_3_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%202/cc2_chart1.json";
+    let figure_4_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%202/cc2_chart2.json";
 
     vegaEmbed('#cc2-chart1', figure_3_spec, chartOptions);
     vegaEmbed('#cc2-chart2', figure_4_spec, chartOptions);
 
     // ---------- CC3: policy debate charts ----------
-    let figure_5_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/cc3_chart1.json";
-    let figure_6_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/cc3_chart2.json";
+    let figure_5_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%203/cc3_chart1.json";
+    let figure_6_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%203/cc3_chart2.json";
 
     vegaEmbed('#cc3-chart1', figure_5_spec, chartOptions);
     vegaEmbed('#cc3-chart2', figure_6_spec, chartOptions);
 
     // ---------- CC4: replication and improvement ----------
-    let figure_7_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/cc4_chart1.json";
-    let figure_8_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/cc4_chart2.json";
-    
+    let figure_7_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%204/cc4_chart1.json";
+    let figure_8_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%204/cc4_chart2.json";
+
     vegaEmbed('#cc4-chart1', figure_7_spec, { actions: false, renderer: "svg" });
     vegaEmbed('#cc4-chart2', figure_8_spec, chartOptions);
     
