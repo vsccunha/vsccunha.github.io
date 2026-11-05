@@ -8,6 +8,7 @@
     "fontSize": 16
   },
   "width": 400,
+  "height":300,
   "config": {"scale": {"bandPaddingInner": 0.2}},
   "data": {
     "url": "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%204/eu_budget_data.csv"
