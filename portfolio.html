@@ -185,7 +185,30 @@
         border: 1px solid var(--rule);
       }
     
+    /* ---------- Side-by-side pairs (CC1, CC2, and CC4 original + replication) ---------- */
+    /* Two equal columns. The row is allowed to be wider than the text column
+       (up to 72rem) so each chart gets enough room, and stays centred on the page. */
+    .pair {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr)); /* minmax(0,...) stops wide charts stretching a column */
+      gap: 0 2.5rem;
+      align-items: start;
+      width: min(72rem, 100vw - 2.5rem);
+      margin-left: calc(50% - min(36rem, 50vw - 1.25rem));
+    }
+    /* Charts with a fixed pixel width (like the CC4 replication) shrink to fit
+       their column, the same way an image does. */
+    .pair .chart svg {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
     /* ---------- Media queries go LAST so they override the rules above ---------- */
+    /* On narrower screens the pairs stack, one chart above the other */
+    @media (max-width: 56rem) {
+      .pair { grid-template-columns: 1fr; }
+    }
     @media (max-width: 30rem) {
       .page-row { flex-direction: column; gap: 0.2rem; }
     }
@@ -247,22 +270,33 @@
       <section class="challenge" id="cc1">
         <h2>CC1. Hosting charts in my own site</h2>
 
-        <div id="cc1-chart1" class="chart"></div>
-        <p class="source">Chart adapted from: <a href="https://github.com/RDeconomist/RDeconomist.github.io/blob/main/charts/ukMacro/govtYieldsUSUKGer_dark.json">Richard Davies</a>. Data: FRED, Bank of England, Bundesbank.</p>
-
-        <div id="cc1-chart2" class="chart"></div>
-        <p class="source">Chart adapted from: <a href="https://github.com/RDeconomist/RDeconomist.github.io/blob/main/charts/ukMacro/exr_usdgbp_slider.json">Richard Davies</a>. Data: Bank of England (series XUDLUSS).</p>
+        <!-- Two charts side by side: each <div> inside .pair is one column -->
+        <div class="pair">
+          <div>
+            <div id="cc1-chart1" class="chart"></div>
+            <p class="source">Chart adapted from: <a href="https://github.com/RDeconomist/RDeconomist.github.io/blob/main/charts/ukMacro/govtYieldsUSUKGer_dark.json">Richard Davies</a>. Data: FRED, Bank of England, Bundesbank.</p>
+          </div>
+          <div>
+            <div id="cc1-chart2" class="chart"></div>
+            <p class="source">Chart adapted from: <a href="https://github.com/RDeconomist/RDeconomist.github.io/blob/main/charts/ukMacro/exr_usdgbp_slider.json">Richard Davies</a>. Data: Bank of England (series XUDLUSS).</p>
+          </div>
+        </div>
       </section>
 
       <!-- ===================== CC2 ===================== -->
       <section class="challenge" id="cc2">
         <h2>CC2. Building my own visualisations</h2>
 
-        <div id="cc2-chart1" class="chart"></div>
-        <p class="source">Chart created in: <a href="https://www.economicsobservatory.com/create">Economics Observatory</a>. Data: Istat</p>
-
-        <div id="cc2-chart2" class="chart"></div>
-        <p class="source">Chart created in: <a href="https://www.economicsobservatory.com/create">Economics Observatory</a>. Data: Destatis</p>
+        <div class="pair">
+          <div>
+            <div id="cc2-chart1" class="chart"></div>
+            <p class="source">Chart created in: <a href="https://www.economicsobservatory.com/create">Economics Observatory</a>. Data: Istat</p>
+          </div>
+          <div>
+            <div id="cc2-chart2" class="chart"></div>
+            <p class="source">Chart created in: <a href="https://www.economicsobservatory.com/create">Economics Observatory</a>. Data: Destatis</p>
+          </div>
+        </div>
       </section>
 
       <!-- ===================== CC3 ===================== -->
@@ -288,14 +322,18 @@
         <section class="challenge" id="cc4">
           <h2>CC4. Replication, re-create, then improve, someone else’s chart.</h2>
         
-          <!-- The original chart (screenshot) -->
-          <img class="original-chart" src="week 4/cc4_original.jpg"
-               alt="Proposed EU Budget 2028-2034 summary graph shared in a tweet by the European Commission, after the State of the Union 2025 speech.">
-          <p class="source">Original chart: <a href="https://x.com/EU_Commission/status/1963984102240948459/photo/1">European Commission on X</a>.</p>
-        
-          <!-- My replication -->
-          <div id="cc4-chart1" class="chart"></div>
-          <p class="source">Data: Used the one from the chart directly.</p>
+          <!-- The original chart (left) and my replication (right), side by side -->
+          <div class="pair">
+            <div>
+              <img class="original-chart" src="week 4/cc4_original.jpg"
+                   alt="Proposed EU Budget 2028-2034 summary graph shared in a tweet by the European Commission, after the State of the Union 2025 speech.">
+              <p class="source">Original chart: <a href="https://x.com/EU_Commission/status/1963984102240948459/photo/1">European Commission on X</a>.</p>
+            </div>
+            <div>
+              <div id="cc4-chart1" class="chart"></div>
+              <p class="source">Data: Used the one from the chart directly.</p>
+            </div>
+          </div>
         
           <!-- My improved version -->
           <div id="cc4-chart2" class="chart"></div>
