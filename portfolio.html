@@ -176,13 +176,17 @@
       padding: 5rem 1.25rem 2.5rem;
     }
 
-    /* Screenshot of the original chart in CC4 */
+    /* Screenshot of the  chart in CC4 */
       .original-chart {
         display: block;
         max-width: 100%;   /* never wider than the column */
         height: auto;      /* keeps the original proportions */
         margin: 1.75rem 0 0.4rem;
         border: 1px solid var(--rule);
+      }
+
+     .pair .original-chart {
+        width: calc(100% * 580 / 720);  /* square picture, same height as the 720×580 chart */
       }
     
     /* ---------- Side-by-side pairs (CC1, CC2, and CC4 original + replication) ---------- */
@@ -203,11 +207,14 @@
       max-width: 100%;
       height: auto;
     }
+    .pair .chart.vega-embed { display: block; }
 
+    
     /* ---------- Media queries go LAST so they override the rules above ---------- */
     /* On narrower screens the pairs stack, one chart above the other */
     @media (max-width: 52rem) {
       .pair { grid-template-columns: 1fr; }
+      .pair .original-chart { width: auto; }
     }
     @media (max-width: 30rem) {
       .page-row { flex-direction: column; gap: 0.2rem; }
