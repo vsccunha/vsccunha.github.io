@@ -343,6 +343,20 @@
           <p>What I did: I opted for a bar chart with the headings vertically. When hoover over the bars you get the info that was previously available in the donut chart.</p>
           <p>Limitations: Only the main data points are displayed, some contextual information is lost.</p>
         </section>
+
+     <!-- ===================== CC5 ===================== -->
+        <section class="challenge" id="cc4">
+          <h2>CC5. Accessing data using an API and Scraping.</h2>
+        
+          <div id="cc5api"></div>
+            <script>
+                vegaEmbed("#cc5api", "charts/cc5_api_chart.json");
+            </script>
+        
+          <!-- What you changed and why. Max 25 words, written by you. -->
+          <p>What I did: I opted for a bar chart with the headings vertically. When hoover over the bars you get the info that was previously available in the donut chart.</p>
+          <p>Limitations: Only the main data points are displayed, some contextual information is lost.</p>
+        </section>
       
     </div>
   </main>
@@ -395,6 +409,13 @@
 
     vegaEmbed('#cc4-chart1', figure_7_spec, { actions: false, renderer: "svg" });
     vegaEmbed('#cc4-chart2', figure_8_spec, chartOptions);
+
+ // ---------- CC5: accessing data with API and Scrapper ----------
+    let figure_9_spec = "";
+    let figure_10_spec = "";
+
+    vegaEmbed('#cc5-chart1', figure_9_spec, chartOptions);
+    vegaEmbed('#cc5-chart2', figure_10_spec, chartOptions);
     
   </script>
 
