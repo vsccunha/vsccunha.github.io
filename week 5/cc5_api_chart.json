@@ -1,0 +1,88 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Inability to face unexpected financial expenses: single women, 2024",
+    "subtitle": [
+      "% of people in single-female households, by income group. Lower is better.",
+      "Countries ordered by GDP per capita in PPS (2025). Source: Eurostat, ilc_mdes04"
+    ],
+    "anchor": "start"
+  },
+  "width": 420,
+  "height": 300,
+  "data": {
+    "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes04?format=JSON&lang=EN&hhtyp=A1F&incgrp=A_MD60&incgrp=B_MD60&unit=PC&geo=SI&geo=LT&geo=PT&geo=EE&geo=RO&time=2024",
+    "format": {"type": "json"}
+  },
+  "transform": [
+    {
+      "fold": [
+        "value.0",
+        "value.1",
+        "value.2",
+        "value.3",
+        "value.4",
+        "value.5",
+        "value.6",
+        "value.7",
+        "value.8",
+        "value.9"
+      ],
+      "as": ["key", "obs"]
+    },
+    {"filter": "isValid(datum.obs)"},
+    {"calculate": "toNumber(replace(datum.key, 'value.', ''))", "as": "idx"},
+    {
+      "calculate": "floor(datum.idx / datum.size[5]) % datum.size[4]",
+      "as": "geoPos"
+    },
+    {
+      "calculate": "floor(datum.idx / (datum.size[5] * datum.size[4] * datum.size[3])) % datum.size[2]",
+      "as": "incPos"
+    },
+    {
+      "calculate": "datum.geoPos === datum.dimension.geo.category.index.SI ? 'Slovenia' : datum.geoPos === datum.dimension.geo.category.index.LT ? 'Lithuania' : datum.geoPos === datum.dimension.geo.category.index.PT ? 'Portugal' : datum.geoPos === datum.dimension.geo.category.index.EE ? 'Estonia' : 'Romania'",
+      "as": "country"
+    },
+    {
+      "calculate": "datum.incPos === datum.dimension.incgrp.category.index.B_MD60 ? 'Below' : 'Above'",
+      "as": "incomeGroup"
+    },
+    {
+      "calculate": "isValid(datum.status) && isValid(datum.status[datum.idx]) ? datum.status[datum.idx] : ''",
+      "as": "flag"
+    }
+  ],
+  "mark": "bar",
+  "encoding": {
+    "x": {
+      "field": "country",
+      "type": "nominal",
+      "sort": ["Slovenia", "Lithuania", "Portugal", "Estonia", "Romania"],
+      "title": null,
+      "axis": {
+        "labelAngle": 0,
+        "labelFontWeight": {
+          "condition": {"test": "datum.value === 'Portugal'", "value": "bold"},
+          "value": "normal"
+        }
+      }
+    },
+    "xOffset": {"field": "incomeGroup", "sort": ["Below", "Above"]},
+    "y": {"field": "obs", "type": "quantitative", "title": "% of people"},
+    "color": {
+      "field": "incomeGroup",
+      "type": "nominal",
+      "title": "Income vs at-risk-of-poverty threshold (60% of median)",
+      "scale": {"domain": ["Below", "Above"], "range": ["#c2410c", "#64748b"]},
+      "legend": {"orient": "top", "direction": "horizontal"}
+    },
+    "tooltip": [
+      {"field": "country", "title": "Country"},
+      {"field": "incomeGroup", "title": "Income group"},
+      {"field": "obs", "title": "% unable to face expense"},
+      {"field": "flag", "title": "Eurostat flag"}
+    ]
+  },
+  "config": {}
+}
