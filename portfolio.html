@@ -345,17 +345,18 @@
         </section>
 
      <!-- ===================== CC5 ===================== -->
-        <section class="challenge" id="cc4">
+        <section class="challenge" id="cc5">
           <h2>CC5. Accessing data using an API and Scraping.</h2>
         
           <div id="cc5api"></div>
             <script>
-                vegaEmbed("#cc5api", "charts/cc5_api_chart.json");
+                vegaEmbed("#cc5api", "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%205/cc5_api_chart.json");
             </script>
         
-          <!-- What you changed and why. Max 25 words, written by you. -->
-          <p>What I did: I opted for a bar chart with the headings vertically. When hoover over the bars you get the info that was previously available in the donut chart.</p>
-          <p>Limitations: Only the main data points are displayed, some contextual information is lost.</p>
+          <!-- Functional description, in your own words: (a) base URL, (b) elements, (c) data returned -->
+            <p> ... </p>
+            <p>Full URL: <a href="https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes04?format=JSON&lang=EN&hhtyp=A1F&incgrp=A_MD60&incgrp=B_MD60&unit=PC&geo=SI&geo=LT&geo=PT&geo=EE&geo=RO&time=2024">https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes04?format=JSON&amp;lang=EN&amp;hhtyp=A1F&amp;incgrp=A_MD60&amp;incgrp=B_MD60&amp;unit=PC&amp;geo=SI&amp;geo=LT&amp;geo=PT&amp;geo=EE&amp;geo=RO&amp;time=2024</a></p>
+
         </section>
       
     </div>
@@ -410,8 +411,8 @@
     vegaEmbed('#cc4-chart1', figure_7_spec, { actions: false, renderer: "svg" });
     vegaEmbed('#cc4-chart2', figure_8_spec, chartOptions);
 
- // ---------- CC5: accessing data with API and Scrapper ----------
-    let figure_9_spec = "";
+ // ---------- CC5: accessing data: API and Scrapper ----------
+    let figure_9_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%205/cc5_api_chart.json";
     let figure_10_spec = "";
 
     vegaEmbed('#cc5-chart1', figure_9_spec, chartOptions);
