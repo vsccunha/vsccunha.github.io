@@ -11,8 +11,10 @@
   "width": 420,
   "height": 300,
   "data": {
-    "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes04?format=JSON&lang=EN&hhtyp=A1F&incgrp=A_MD60&incgrp=B_MD60&unit=PC&geo=SI&geo=LT&geo=PT&geo=EE&geo=RO&time=2024",
-    "format": {"type": "json"}
+    "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes04?format=JSON&lang=EN&hhcomp=F1&rskpovth=A_60&rskpovth=B_60&unit=PC&geo=SI&geo=LT&geo=PT&geo=EE&geo=RO&time=2024",
+    "format": {
+      "type": "json"
+    }
   },
   "transform": [
     {
@@ -28,24 +30,40 @@
         "value.8",
         "value.9"
       ],
-      "as": ["key", "obs"]
+      "as": [
+        "key",
+        "obs"
+      ]
     },
-    {"filter": "isValid(datum.obs)"},
-    {"calculate": "toNumber(replace(datum.key, 'value.', ''))", "as": "idx"},
     {
-      "calculate": "floor(datum.idx / datum.size[5]) % datum.size[4]",
+      "filter": "isValid(datum.obs)"
+    },
+    {
+      "calculate": "toNumber(replace(datum.key, 'value.', ''))",
+      "as": "idx"
+    },
+    {
+      "calculate": "indexof(datum.id, 'geo')",
+      "as": "gi"
+    },
+    {
+      "calculate": "indexof(datum.id, 'rskpovth')",
+      "as": "ti"
+    },
+    {
+      "calculate": "floor(datum.idx / (datum.ti > datum.gi ? datum.size[datum.ti] : 1)) % datum.size[datum.gi]",
       "as": "geoPos"
     },
     {
-      "calculate": "floor(datum.idx / (datum.size[5] * datum.size[4] * datum.size[3])) % datum.size[2]",
-      "as": "incPos"
+      "calculate": "floor(datum.idx / (datum.gi > datum.ti ? datum.size[datum.gi] : 1)) % datum.size[datum.ti]",
+      "as": "thrPos"
     },
     {
       "calculate": "datum.geoPos === datum.dimension.geo.category.index.SI ? 'Slovenia' : datum.geoPos === datum.dimension.geo.category.index.LT ? 'Lithuania' : datum.geoPos === datum.dimension.geo.category.index.PT ? 'Portugal' : datum.geoPos === datum.dimension.geo.category.index.EE ? 'Estonia' : 'Romania'",
       "as": "country"
     },
     {
-      "calculate": "datum.incPos === datum.dimension.incgrp.category.index.B_MD60 ? 'Below' : 'Above'",
+      "calculate": "datum.thrPos === datum.dimension.rskpovth.category.index.B_60 ? 'Below' : 'Above'",
       "as": "incomeGroup"
     },
     {
@@ -58,31 +76,73 @@
     "x": {
       "field": "country",
       "type": "nominal",
-      "sort": ["Slovenia", "Lithuania", "Portugal", "Estonia", "Romania"],
+      "sort": [
+        "Slovenia",
+        "Lithuania",
+        "Portugal",
+        "Estonia",
+        "Romania"
+      ],
       "title": null,
       "axis": {
         "labelAngle": 0,
         "labelFontWeight": {
-          "condition": {"test": "datum.value === 'Portugal'", "value": "bold"},
+          "condition": {
+            "test": "datum.value === 'Portugal'",
+            "value": "bold"
+          },
           "value": "normal"
         }
       }
     },
-    "xOffset": {"field": "incomeGroup", "sort": ["Below", "Above"]},
-    "y": {"field": "obs", "type": "quantitative", "title": "% of people"},
+    "xOffset": {
+      "field": "incomeGroup",
+      "sort": [
+        "Below",
+        "Above"
+      ]
+    },
+    "y": {
+      "field": "obs",
+      "type": "quantitative",
+      "title": "% of people"
+    },
     "color": {
       "field": "incomeGroup",
       "type": "nominal",
       "title": "Income vs at-risk-of-poverty threshold (60% of median)",
-      "scale": {"domain": ["Below", "Above"], "range": ["#c2410c", "#64748b"]},
-      "legend": {"orient": "top", "direction": "horizontal"}
+      "scale": {
+        "domain": [
+          "Below",
+          "Above"
+        ],
+        "range": [
+          "#c2410c",
+          "#64748b"
+        ]
+      },
+      "legend": {
+        "orient": "top",
+        "direction": "horizontal"
+      }
     },
     "tooltip": [
-      {"field": "country", "title": "Country"},
-      {"field": "incomeGroup", "title": "Income group"},
-      {"field": "obs", "title": "% unable to face expense"},
-      {"field": "flag", "title": "Eurostat flag"}
+      {
+        "field": "country",
+        "title": "Country"
+      },
+      {
+        "field": "incomeGroup",
+        "title": "Income group"
+      },
+      {
+        "field": "obs",
+        "title": "% unable to face expense"
+      },
+      {
+        "field": "flag",
+        "title": "Eurostat flag"
+      }
     ]
-  },
-  "config": {}
+  }
 }
