@@ -1,0 +1,145 @@
+Country,Metric,Value
+Albania,Gross_Euro,903.0
+Andorra,Gross_Euro,2515.0
+Armenia,Gross_Euro,679.0
+Austria,Gross_Euro,5497.0
+Azerbaijan,Gross_Euro,587.0
+Belarus,Gross_Euro,859.0
+Belgium,Gross_Euro,4076.0
+Bosnia and Herzegovina,Gross_Euro,1407.0
+Bulgaria,Gross_Euro,1443.0
+Croatia,Gross_Euro,2180.0
+Cyprus,Gross_Euro,2932.0
+Czech Republic,Gross_Euro,2144.0
+Denmark,Gross_Euro,6925.0
+Estonia,Gross_Euro,2215.0
+Finland,Gross_Euro,4304.0
+France,Gross_Euro,3693.0
+Georgia,Gross_Euro,742.0
+Germany,Gross_Euro,4851.0
+Greece,Gross_Euro,1415.0
+Hungary,Gross_Euro,1984.0
+Iceland,Gross_Euro,5660.0
+Ireland,Gross_Euro,5307.0
+Italy,Gross_Euro,2791.0
+Kazakhstan,Gross_Euro,754.0
+Kosovo,Gross_Euro,713.0
+Latvia,Gross_Euro,1886.0
+Lithuania,Gross_Euro,2628.0
+Luxembourg,Gross_Euro,6118.0
+Malta,Gross_Euro,1833.0
+Moldova,Gross_Euro,828.0
+Montenegro,Gross_Euro,1242.0
+Netherlands,Gross_Euro,5190.0
+North Macedonia,Gross_Euro,1142.0
+Norway,Gross_Euro,5241.0
+Poland,Gross_Euro,2253.0
+Portugal,Gross_Euro,2190.0
+Romania,Gross_Euro,1943.0
+Russia,Gross_Euro,1048.0
+San Marino,Gross_Euro,2629.0
+Serbia,Gross_Euro,1414.0
+Slovakia,Gross_Euro,1611.0
+Slovenia,Gross_Euro,2751.0
+Spain,Gross_Euro,2818.0
+Sweden,Gross_Euro,3964.0
+Switzerland,Gross_Euro,8759.0
+Turkey,Gross_Euro,1474.0
+Ukraine,Gross_Euro,677.0
+United Kingdom,Gross_Euro,4807.0
+Albania,Net_Euro,723.0
+Andorra,Net_Euro,2351.0
+Armenia,Net_Euro,497.0
+Austria,Net_Euro,3778.0
+Azerbaijan,Net_Euro,506.0
+Belarus,Net_Euro,740.0
+Belgium,Net_Euro,2631.0
+Bosnia and Herzegovina,Net_Euro,900.0
+Bulgaria,Net_Euro,1120.0
+Croatia,Net_Euro,1543.0
+Cyprus,Net_Euro,2389.0
+Czech Republic,Net_Euro,1680.0
+Denmark,Net_Euro,4670.0
+Estonia,Net_Euro,1820.0
+Finland,Net_Euro,3133.0
+France,Net_Euro,2797.0
+Georgia,Net_Euro,593.0
+Germany,Net_Euro,3008.0
+Greece,Net_Euro,1098.0
+Hungary,Net_Euro,1418.0
+Iceland,Net_Euro,3871.0
+Ireland,Net_Euro,3349.0
+Italy,Net_Euro,2017.0
+Kazakhstan,Net_Euro,618.0
+Kosovo,Net_Euro,636.0
+Latvia,Net_Euro,1401.0
+Lithuania,Net_Euro,1595.0
+Luxembourg,Net_Euro,4086.0
+Malta,Net_Euro,1507.0
+Moldova,Net_Euro,663.0
+Montenegro,Net_Euro,1040.0
+Netherlands,Net_Euro,3771.0
+North Macedonia,Net_Euro,759.0
+Norway,Net_Euro,3828.0
+Poland,Net_Euro,1539.0
+Portugal,Net_Euro,1496.0
+Romania,Net_Euro,1165.0
+Russia,Net_Euro,912.0
+San Marino,Net_Euro,2629.0
+Serbia,Net_Euro,1025.0
+Slovakia,Net_Euro,1211.0
+Slovenia,Net_Euro,1723.0
+Spain,Net_Euro,2136.0
+Sweden,Net_Euro,3174.0
+Switzerland,Net_Euro,7132.0
+Turkey,Net_Euro,816.0
+Ukraine,Net_Euro,521.0
+United Kingdom,Net_Euro,3495.0
+Albania,Net_to_Gross_Ratio,0.8
+Andorra,Net_to_Gross_Ratio,0.93
+Armenia,Net_to_Gross_Ratio,0.73
+Austria,Net_to_Gross_Ratio,0.69
+Azerbaijan,Net_to_Gross_Ratio,0.86
+Belarus,Net_to_Gross_Ratio,0.86
+Belgium,Net_to_Gross_Ratio,0.65
+Bosnia and Herzegovina,Net_to_Gross_Ratio,0.64
+Bulgaria,Net_to_Gross_Ratio,0.78
+Croatia,Net_to_Gross_Ratio,0.71
+Cyprus,Net_to_Gross_Ratio,0.84
+Czech Republic,Net_to_Gross_Ratio,0.79
+Denmark,Net_to_Gross_Ratio,0.64
+Estonia,Net_to_Gross_Ratio,0.77
+Finland,Net_to_Gross_Ratio,0.59
+France,Net_to_Gross_Ratio,0.76
+Georgia,Net_to_Gross_Ratio,0.8
+Germany,Net_to_Gross_Ratio,0.62
+Greece,Net_to_Gross_Ratio,0.79
+Hungary,Net_to_Gross_Ratio,0.7
+Iceland,Net_to_Gross_Ratio,0.68
+Ireland,Net_to_Gross_Ratio,0.79
+Italy,Net_to_Gross_Ratio,0.72
+Kazakhstan,Net_to_Gross_Ratio,0.82
+Kosovo,Net_to_Gross_Ratio,0.86
+Latvia,Net_to_Gross_Ratio,0.74
+Lithuania,Net_to_Gross_Ratio,0.61
+Luxembourg,Net_to_Gross_Ratio,0.66
+Malta,Net_to_Gross_Ratio,0.79
+Moldova,Net_to_Gross_Ratio,0.8
+Montenegro,Net_to_Gross_Ratio,0.84
+Netherlands,Net_to_Gross_Ratio,0.72
+North Macedonia,Net_to_Gross_Ratio,0.66
+Norway,Net_to_Gross_Ratio,0.73
+Poland,Net_to_Gross_Ratio,0.68
+Portugal,Net_to_Gross_Ratio,0.68
+Romania,Net_to_Gross_Ratio,0.6
+Russia,Net_to_Gross_Ratio,0.87
+San Marino,Net_to_Gross_Ratio,1.0
+Serbia,Net_to_Gross_Ratio,0.72
+Slovakia,Net_to_Gross_Ratio,0.76
+Slovenia,Net_to_Gross_Ratio,0.62
+Spain,Net_to_Gross_Ratio,0.76
+Sweden,Net_to_Gross_Ratio,0.8
+Switzerland,Net_to_Gross_Ratio,0.81
+Turkey,Net_to_Gross_Ratio,0.55
+Ukraine,Net_to_Gross_Ratio,0.77
+United Kingdom,Net_to_Gross_Ratio,0.73
