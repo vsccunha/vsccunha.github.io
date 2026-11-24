@@ -367,10 +367,16 @@
             </script>
         
           <!-- Functional description, in your own words: (a) base URL, (b) elements, (c) data returned -->
-            <p> ... </p>
-            <p>Full URL: <a href="https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes04?format=JSON&lang=EN&hhtyp=A1F&incgrp=A_MD60&incgrp=B_MD60&unit=PC&geo=SI&geo=LT&geo=PT&geo=EE&geo=RO&time=2024">https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes04?format=JSON&amp;lang=EN&amp;hhtyp=A1F&amp;incgrp=A_MD60&amp;incgrp=B_MD60&amp;unit=PC&amp;geo=SI&amp;geo=LT&amp;geo=PT&amp;geo=EE&amp;geo=RO&amp;time=2024</a></p>
+            <p> This Eurostat API is  </p>
+            <p>Full URL: <a href="https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes04?format=JSON&lang=EN&hhtyp=A1F&incgrp=A_MD60&incgrp=B_MD60&unit=PC&geo=SI&geo=LT&geo=PT&geo=EE&geo=RO&time=2024">https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes04?format=JSON&amp;lang=EN&amp;hhtyp=A1F&amp;incgrp=A_MD60&amp;incgrp=B_MD60&amp;unit=PC&amp;geo=SI&amp;geo=LT&amp;geo=PT&amp;geo=EE&amp;geo=RO&amp;time=2024">Eurostat API</a></p>
 
-        </section>
+          <!-- Scraping chart -->
+            <div id="cc5-chart2" class="chart"></div>
+            <p class="source">Data scraped from: <a href="https://en.wikipedia.org/wiki/List_of_European_countries_by_average_wage">Wikipedia, List of European countries by average wage</a>. Notebook: <a href="https://colab.research.google.com/drive/1aXCdN5wZTgNLFIp4OE4oPNF77QuCBAMi?usp=sharing">Google Colab</a>.</p>
+
+          <!-- Commentary, max 25 words -->
+            <p> Challenges: bypassing Wikipedia blocking with a User-Agent, handling complex multi-index column headers, deleting text footnote markers, and converting non-numeric symbols. </p>
+            </section>
       
     </div>
   </main>
@@ -426,7 +432,7 @@
 
  // ---------- CC5: accessing data: API and Scrapper ----------
     let figure_9_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%205/cc5_api_chart.json";
-    let figure_10_spec = "";
+    let figure_10_spec = "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%205/cc5_average_monthly_wage.json";
 
     vegaEmbed('#cc5-chart1', figure_9_spec, chartOptions);
     vegaEmbed('#cc5-chart2', figure_10_spec, chartOptions);
