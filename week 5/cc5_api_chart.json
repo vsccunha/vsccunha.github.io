@@ -139,10 +139,6 @@
       {
         "field": "obs",
         "title": "% unable to face expense"
-      },
-      {
-        "field": "flag",
-        "title": "Eurostat flag"
       }
     ]
   }
