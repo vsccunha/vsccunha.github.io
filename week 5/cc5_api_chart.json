@@ -66,10 +66,6 @@
     {
       "calculate": "datum.thrPos === datum.dimension.rskpovth.category.index.B_60 ? 'Below' : 'Above'",
       "as": "incomeGroup"
-    },
-    {
-      "calculate": "isValid(datum.status) && isValid(datum.status[datum.idx]) ? datum.status[datum.idx] : ''",
-      "as": "flag"
     }
   ],
   "mark": "bar",
