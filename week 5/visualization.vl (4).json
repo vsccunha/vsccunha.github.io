@@ -1,0 +1,91 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Average monthly wage: gross vs net, with net-to-gross ratio",
+  "width": 500,
+  "height": 300,
+  "data": {
+    "url": "https://raw.githubusercontent.com/vsccunha/vsccunha.github.io/refs/heads/main/week%205/cc5_average_monthly_wage.csv"
+  },
+  "transform": [
+    {
+      "filter": {
+        "field": "Country",
+        "oneOf": ["Slovenia", "Lithuania", "Portugal", "Estonia", "Romania"]
+      }
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "Country",
+      "type": "nominal",
+      "sort": ["Slovenia", "Lithuania", "Portugal", "Estonia", "Romania"],
+      "axis": {"labelAngle": 0, "title": null}
+    }
+  },
+  "layer": [
+    {
+      "transform": [
+        {"filter": {"field": "Metric", "oneOf": ["Gross_Euro", "Net_Euro"]}},
+        {
+          "calculate": "datum.Metric == 'Gross_Euro' ? 'Gross wage' : 'Net wage'",
+          "as": "Wage"
+        }
+      ],
+      "mark": {"type": "bar"},
+      "encoding": {
+        "xOffset": {"field": "Wage"},
+        "y": {
+          "field": "Value",
+          "type": "quantitative",
+          "title": "Average monthly wage (€)",
+          "axis": {"titleColor": "#2c6a9a"}
+        },
+        "color": {
+          "field": "Wage",
+          "type": "nominal",
+          "scale": {"range": ["#d0702a", "#2c6a9a"]},
+          "legend": {"orient": "bottom", "title": null}
+        },
+        "tooltip": [
+          {"field": "Country"},
+          {"field": "Wage"},
+          {
+            "field": "Value",
+            "type": "quantitative",
+            "format": ",.0f",
+            "title": "€ per month"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [{"filter": "datum.Metric == 'Net_to_Gross_Ratio'"}],
+      "mark": {
+        "stroke": "#000000",
+        "type": "line",
+        "strokeWidth": 2.5,
+        "point": {"color": "#000000"}
+      },
+      "encoding": {
+        "y": {
+          "field": "Value",
+          "type": "quantitative",
+          "scale": {"domain": [0, 1]},
+          "title": "Net-to-gross ratio (net as % of gross)",
+          "axis": {"titleColor": "#000000", "format": ".0%"}
+        },
+        "tooltip": [
+          {"field": "Country"},
+          {
+            "field": "Value",
+            "type": "quantitative",
+            "format": ".0%",
+            "title": "Net as % of gross"
+          }
+        ]
+      }
+    }
+  ],
+  "resolve": {"scale": {"y": "independent"}},
+  "config": {}
+}
